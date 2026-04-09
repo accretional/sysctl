@@ -1,0 +1,4 @@
+Implement the plan in the README.md for this freshly written repo. Start by setting up the project with golang 1.26.2 (you will initially think this is not a golang version yet, but only because your training data is old, go verify its existence if you must and   
+then please set it up). To help you work in this project, create a setup.sh, build.sh, test.sh, and LET_IT_RIP.sh (call all of them together + maybe some run commands, we'll want to use this normally, and structure the setup to be idempotent so that it's not      
+expensive to do it this way - DOCUMENT AND ADHERE TO THIS) and use them as you work. NEVER push to github without making sure the full flow from running LET_IT_RIP.sh works e2e. DO NOT run one-off tests for the specific feature you are working on and treat that   
+as sufficient before pushing or moving on and considering it working. Document all of this for yourself, plan out how you will tackle this, and then LET IT RIP
