@@ -1,0 +1,1321 @@
+# KernelMetricRegistry for Apple Silicon macOS
+# Generated from internal/metrics/registry.go
+# Darwin 24.6.0 / xnu-11417 / ARM64
+#
+# kernel_access_pattern: whether the kernel CAN change this value at runtime
+# recommended_access_pattern: what monitoring clients should use for freshness
+
+os_registry: "darwin-arm64"
+os_version: "Darwin 24.6.0 / xnu-11417"
+
+# --- hw.cpu ---
+metrics {
+  name: "hw.ncpu"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.activecpu"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.physicalcpu"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.physicalcpu_max"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.logicalcpu"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.logicalcpu_max"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.packages"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.nperflevels"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.cpu64bit_capable"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.cputype"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.cpusubtype"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.cpufamily"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.cpusubfamily"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.byteorder"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+
+# --- hw.memory ---
+metrics {
+  name: "hw.memsize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.memsize_usable"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.pagesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.pagesize32"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+
+# --- hw.cache ---
+metrics {
+  name: "hw.cachelinesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.l1icachesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.l1dcachesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.l2cachesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.tbfrequency"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.cacheconfig"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.cachesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+
+# --- hw.perflevel ---
+metrics {
+  name: "hw.perflevel0.name"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel0.physicalcpu"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel0.physicalcpu_max"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel0.logicalcpu"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel0.logicalcpu_max"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel0.l1icachesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel0.l1dcachesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel0.l2cachesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel0.cpusperl2"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel1.name"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel1.physicalcpu"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel1.physicalcpu_max"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel1.logicalcpu"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel1.logicalcpu_max"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel1.l1icachesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel1.l1dcachesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel1.l2cachesize"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.perflevel1.cpusperl2"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+
+# --- hw.arm ---
+metrics {
+  name: "hw.optional.arm.FEAT_AES"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_SHA256"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_SHA512"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_SHA3"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_LSE"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_LSE2"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_CRC32"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_BF16"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_I8MM"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_DotProd"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_SME"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_SME2"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_PAuth"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_BTI"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.AdvSIMD"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.arm.FEAT_FP16"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "hw.optional.floatingpoint"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+
+# --- kern.identity ---
+metrics {
+  name: "kern.ostype"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "kern.osrelease"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "kern.osversion"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "kern.osproductversion"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "kern.version"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "kern.hostname"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "kern.uuid"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "kern.bootuuid"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "kern.osrevision"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "kern.osreleasetype"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "kern.iossupportversion"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+
+# --- kern.process ---
+metrics {
+  name: "kern.num_files"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "kern.num_vnodes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "kern.num_recycledvnodes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "kern.free_vnodes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+
+# --- kern.memory ---
+metrics {
+  name: "kern.memorystatus_level"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "kern.memorystatus_purge_on_warning"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.memorystatus_purge_on_urgent"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.memorystatus_purge_on_critical"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- kern.sched ---
+metrics {
+  name: "kern.sched"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.sched_allow_NO_SMT_threads"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.cpu_checkin_interval"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.wq_max_threads"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.wq_max_constrained_threads"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.thread_groups_supported"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- kern.time ---
+metrics {
+  name: "kern.boottime"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "kern.sleeptime"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+metrics {
+  name: "kern.waketime"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+metrics {
+  name: "kern.wake_abs_time"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+metrics {
+  name: "kern.sleep_abs_time"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+metrics {
+  name: "kern.useractive_abs_time"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+metrics {
+  name: "kern.userinactive_abs_time"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+metrics {
+  name: "kern.monotonicclock_usecs"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+metrics {
+  name: "kern.clockrate"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+
+# --- kern.limits ---
+metrics {
+  name: "kern.maxproc"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.maxprocperuid"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.maxfiles"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.maxfilesperproc"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.maxvnodes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.maxnbuf"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.argmax"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.ngroups"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.aiomax"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.aioprocmax"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.coredump"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.num_tasks"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.num_threads"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.num_taskthreads"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- kern.ipc ---
+metrics {
+  name: "kern.ipc.maxsockbuf"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.ipc.somaxconn"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.ipc.nmbclusters"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- kern.misc ---
+metrics {
+  name: "kern.hv_support"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.hv_vmm_present"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.secure_kernel"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.safeboot"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.hibernatemode"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.hibernatecount"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.slide"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.stack_size"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kern.stack_depth_max"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- vm.pressure ---
+metrics {
+  name: "vm.memory_pressure"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.page_free_wanted"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.vm_page_free_target"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+
+# --- vm.pages ---
+metrics {
+  name: "vm.pages"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.pagesize"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.page_free_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.page_speculative_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.page_cleaned_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.page_pageable_internal_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.page_pageable_external_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.page_purgeable_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.page_purgeable_wired_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.page_reusable_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.page_realtime_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.vm_page_external_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.vm_page_background_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.vm_page_background_internal_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.vm_page_background_external_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.vm_page_background_target"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.pages_grabbed"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+
+# --- vm.compressor ---
+metrics {
+  name: "vm.compressor_mode"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "vm.compressor_is_active"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_available"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_input_bytes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_compressed_bytes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_bytes_used"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_pool_size"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_segment_pages_compressed"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_segment_limit"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "vm.compressor_swapouts_under_30s"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_swapouts_under_60s"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_swapouts_under_300s"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_swapper_reclaim_swapins"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_swapper_defrag_swapins"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.compressor_swapper_swapout_thrashing_detected"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+
+# --- vm.pageout ---
+metrics {
+  name: "vm.pageout_inactive_clean"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.pageout_inactive_used"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.pageout_inactive_dirty_internal"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.pageout_inactive_dirty_external"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.pageout_speculative_clean"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.pageout_freed_external"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.pageout_freed_speculative"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.pageout_freed_cleaned"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.pageout_protect_realtime"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.vm_pageout_considered_bq_internal"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.vm_pageout_considered_bq_external"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.vm_pageout_rejected_bq_internal"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.vm_pageout_rejected_bq_external"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+
+# --- vm.swap ---
+metrics {
+  name: "vm.swapusage"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+metrics {
+  name: "vm.swap_enabled"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "vm.swapfileprefix"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- vm.wire ---
+metrics {
+  name: "vm.global_user_wire_limit"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "vm.user_wire_limit"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "vm.global_no_user_wire_amount"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "vm.add_wire_count_over_global_limit"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "vm.add_wire_count_over_user_limit"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- vm.misc ---
+metrics {
+  name: "vm.cs_blob_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.cs_blob_count_peak"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.cs_blob_size"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.cs_blob_size_peak"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.shared_region_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.shared_region_peak"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.copied_on_read"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vm.loadavg"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+
+# --- machdep ---
+metrics {
+  name: "machdep.cpu.brand_string"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "machdep.cpu.core_count"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "machdep.cpu.thread_count"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "machdep.cpu.cores_per_package"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "machdep.cpu.logical_per_package"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "machdep.ptrauth_enabled"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "machdep.virtual_address_size"
+  kernel_access_pattern { pattern: STATIC }
+  recommended_access_pattern { pattern: STATIC }
+}
+metrics {
+  name: "machdep.time_since_reset"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+metrics {
+  name: "machdep.wake_abstime"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+metrics {
+  name: "machdep.wake_conttime"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+metrics {
+  name: "machdep.user_idle_level"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+}
+
+# --- net.tcp ---
+metrics {
+  name: "net.inet.tcp.mssdflt"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.keepidle"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.keepintvl"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.keepcnt"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.sendspace"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.recvspace"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.pcbcount"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "net.inet.tcp.sack"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.sack_globalholes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "net.inet.tcp.sack_globalmaxholes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.ecn_initiate_out"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.ecn_negotiate_in"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.fastopen"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.delayed_ack"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.blackhole"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.cubic_sockets"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "net.inet.tcp.v6mssdflt"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.tcp.always_keepalive"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- net.udp ---
+metrics {
+  name: "net.inet.udp.pcbcount"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "net.inet.udp.maxdgram"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.udp.recvspace"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.udp.checksum"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- net.ip ---
+metrics {
+  name: "net.inet.ip.forwarding"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.ip.ttl"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "net.inet.ip.maxfragpackets"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- net.misc ---
+metrics {
+  name: "net.local.pcbcount"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "net.soflow.count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "net.inet.mptcp.pcbcount"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+
+# --- vfs ---
+metrics {
+  name: "vfs.vnstats.num_vnodes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vfs.vnstats.num_free_vnodes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vfs.vnstats.num_recycledvnodes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vfs.vnstats.num_dead_vnodes"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vfs.vnstats.num_newvnode_calls"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vfs.nummntops"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "vfs.generic.apfs.allocated"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+
+# --- debug ---
+metrics {
+  name: "debug.lowpri_throttle_enabled"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "debug.bpf_bufsize"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "debug.bpf_maxbufsize"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- kpc ---
+metrics {
+  name: "kpc.pc_capture_supported"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "kperf.debug_level"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- iogpu ---
+metrics {
+  name: "iogpu.wired_limit_mb"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "iogpu.wired_lwm_mb"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+metrics {
+  name: "iogpu.dynamic_lwm"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+}
+
+# --- security ---
+metrics {
+  name: "security.mac.vnode_label_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "security.mac.asp.stats.exec_hook_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "security.mac.asp.stats.library_hook_count"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "security.mac.asp.stats.exec_hook_work_time"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "security.mac.asp.stats.library_hook_time"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+
+# --- computed ---
+metrics {
+  name: "computed.memory_utilization_pct"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "computed.compression_ratio"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "computed.swap_utilization_pct"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "computed.compressor_pressure_pct"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "computed.total_connections"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "computed.uptime_seconds"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}
+metrics {
+  name: "computed.vfs_reclamation_pct"
+  kernel_access_pattern { pattern: DYNAMIC }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
+}

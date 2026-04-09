@@ -16,14 +16,28 @@ import (
 // SysctlServer implements the SysctlService gRPC service.
 type SysctlServer struct {
 	pb.UnimplementedSysctlServiceServer
-	cache *macosasmsysctl.MIBCache
+	cache          *macosasmsysctl.MIBCache
+	kernelRegistry *pb.KernelMetricRegistry // raw from textproto
+	fullRegistry   *pb.KernelMetricRegistry // merged with MetricInfo fields
 }
 
 // New returns a new SysctlServer with a warmed MIB cache.
-func New() *SysctlServer {
+// If osVersion is non-empty, the matching kernel registry is loaded.
+func New(osVersion string) *SysctlServer {
 	s := &SysctlServer{
 		cache: macosasmsysctl.NewMIBCache(),
 	}
+
+	// Load kernel registry if available.
+	if osVersion != "" {
+		reg, err := metrics.LoadKernelRegistry(osVersion)
+		if err == nil {
+			s.kernelRegistry = reg
+		}
+	}
+
+	// Build the full registry by merging Known (identity) with kernel registry (access patterns).
+	s.fullRegistry = s.buildFullRegistry()
 
 	// Pre-resolve MIBs for all known non-computed metrics.
 	names := make([]string, 0, len(metrics.Known))
@@ -35,6 +49,47 @@ func New() *SysctlServer {
 	s.cache.Warm(names)
 
 	return s
+}
+
+// buildFullRegistry merges the Known metric registry (descriptions, types, categories)
+// with the kernel registry (access patterns) into a single KernelMetricRegistry.
+func (s *SysctlServer) buildFullRegistry() *pb.KernelMetricRegistry {
+	reg := &pb.KernelMetricRegistry{}
+	if s.kernelRegistry != nil {
+		reg.OsRegistry = s.kernelRegistry.OsRegistry
+		reg.OsVersion = s.kernelRegistry.OsVersion
+	}
+
+	// Index kernel metrics by name for lookup.
+	var kernelByName map[string]*pb.KernelMetric
+	if s.kernelRegistry != nil {
+		kernelByName = metrics.KernelRegistryByName(s.kernelRegistry)
+	}
+
+	// Default access config for metrics not in the kernel registry.
+	defaultAccess := &pb.AccessConfig{Pattern: pb.AccessPattern_DYNAMIC}
+
+	for _, info := range metrics.Known {
+		km := &pb.KernelMetric{
+			Name:        info.Name,
+			Description: info.Description,
+			ValueType:   string(info.Type),
+			Category:    string(info.Category),
+		}
+
+		if km2, ok := kernelByName[info.Name]; ok {
+			km.KernelAccessPattern = km2.KernelAccessPattern
+			km.RecommendedAccessPattern = km2.RecommendedAccessPattern
+			km.Notes = km2.Notes
+		} else {
+			km.KernelAccessPattern = defaultAccess
+			km.RecommendedAccessPattern = defaultAccess
+		}
+
+		reg.Metrics = append(reg.Metrics, km)
+	}
+
+	return reg
 }
 
 func (s *SysctlServer) GetMetric(_ context.Context, req *pb.GetMetricRequest) (*pb.GetMetricResponse, error) {
@@ -65,19 +120,21 @@ func (s *SysctlServer) GetMetricsByCategory(_ context.Context, req *pb.GetMetric
 }
 
 func (s *SysctlServer) ListKnownMetrics(_ context.Context, req *pb.ListKnownMetricsRequest) (*pb.ListKnownMetricsResponse, error) {
-	resp := &pb.ListKnownMetricsResponse{}
-	for _, info := range metrics.Known {
-		if req.Category != "" && string(info.Category) != req.Category {
-			continue
-		}
-		resp.Metrics = append(resp.Metrics, &pb.MetricInfo{
-			Name:        info.Name,
-			Description: info.Description,
-			ValueType:   string(info.Type),
-			Category:    string(info.Category),
-		})
+	if req.Category == "" {
+		return &pb.ListKnownMetricsResponse{Registry: s.fullRegistry}, nil
 	}
-	return resp, nil
+
+	// Filter by category.
+	filtered := &pb.KernelMetricRegistry{
+		OsRegistry: s.fullRegistry.OsRegistry,
+		OsVersion:  s.fullRegistry.OsVersion,
+	}
+	for _, km := range s.fullRegistry.Metrics {
+		if km.Category == req.Category {
+			filtered.Metrics = append(filtered.Metrics, km)
+		}
+	}
+	return &pb.ListKnownMetricsResponse{Registry: filtered}, nil
 }
 
 func (s *SysctlServer) ListCategories(_ context.Context, _ *pb.ListCategoriesRequest) (*pb.ListCategoriesResponse, error) {
@@ -91,6 +148,10 @@ func (s *SysctlServer) ListCategories(_ context.Context, _ *pb.ListCategoriesReq
 		})
 	}
 	return resp, nil
+}
+
+func (s *SysctlServer) GetKernelRegistry(_ context.Context, _ *pb.GetKernelRegistryRequest) (*pb.GetKernelRegistryResponse, error) {
+	return &pb.GetKernelRegistryResponse{Registry: s.fullRegistry}, nil
 }
 
 func (s *SysctlServer) readMetric(name string) *pb.Metric {

@@ -24,6 +24,7 @@ const (
 	SysctlService_GetMetricsByCategory_FullMethodName = "/sysctl.SysctlService/GetMetricsByCategory"
 	SysctlService_ListKnownMetrics_FullMethodName     = "/sysctl.SysctlService/ListKnownMetrics"
 	SysctlService_ListCategories_FullMethodName       = "/sysctl.SysctlService/ListCategories"
+	SysctlService_GetKernelRegistry_FullMethodName    = "/sysctl.SysctlService/GetKernelRegistry"
 )
 
 // SysctlServiceClient is the client API for SysctlService service.
@@ -42,6 +43,8 @@ type SysctlServiceClient interface {
 	ListKnownMetrics(ctx context.Context, in *ListKnownMetricsRequest, opts ...grpc.CallOption) (*ListKnownMetricsResponse, error)
 	// ListCategories returns all metric categories.
 	ListCategories(ctx context.Context, in *ListCategoriesRequest, opts ...grpc.CallOption) (*ListCategoriesResponse, error)
+	// GetKernelRegistry returns the kernel metric registry for this platform.
+	GetKernelRegistry(ctx context.Context, in *GetKernelRegistryRequest, opts ...grpc.CallOption) (*GetKernelRegistryResponse, error)
 }
 
 type sysctlServiceClient struct {
@@ -102,6 +105,16 @@ func (c *sysctlServiceClient) ListCategories(ctx context.Context, in *ListCatego
 	return out, nil
 }
 
+func (c *sysctlServiceClient) GetKernelRegistry(ctx context.Context, in *GetKernelRegistryRequest, opts ...grpc.CallOption) (*GetKernelRegistryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetKernelRegistryResponse)
+	err := c.cc.Invoke(ctx, SysctlService_GetKernelRegistry_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SysctlServiceServer is the server API for SysctlService service.
 // All implementations must embed UnimplementedSysctlServiceServer
 // for forward compatibility.
@@ -118,6 +131,8 @@ type SysctlServiceServer interface {
 	ListKnownMetrics(context.Context, *ListKnownMetricsRequest) (*ListKnownMetricsResponse, error)
 	// ListCategories returns all metric categories.
 	ListCategories(context.Context, *ListCategoriesRequest) (*ListCategoriesResponse, error)
+	// GetKernelRegistry returns the kernel metric registry for this platform.
+	GetKernelRegistry(context.Context, *GetKernelRegistryRequest) (*GetKernelRegistryResponse, error)
 	mustEmbedUnimplementedSysctlServiceServer()
 }
 
@@ -142,6 +157,9 @@ func (UnimplementedSysctlServiceServer) ListKnownMetrics(context.Context, *ListK
 }
 func (UnimplementedSysctlServiceServer) ListCategories(context.Context, *ListCategoriesRequest) (*ListCategoriesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListCategories not implemented")
+}
+func (UnimplementedSysctlServiceServer) GetKernelRegistry(context.Context, *GetKernelRegistryRequest) (*GetKernelRegistryResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetKernelRegistry not implemented")
 }
 func (UnimplementedSysctlServiceServer) mustEmbedUnimplementedSysctlServiceServer() {}
 func (UnimplementedSysctlServiceServer) testEmbeddedByValue()                       {}
@@ -254,6 +272,24 @@ func _SysctlService_ListCategories_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SysctlService_GetKernelRegistry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetKernelRegistryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SysctlServiceServer).GetKernelRegistry(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SysctlService_GetKernelRegistry_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SysctlServiceServer).GetKernelRegistry(ctx, req.(*GetKernelRegistryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SysctlService_ServiceDesc is the grpc.ServiceDesc for SysctlService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -280,6 +316,10 @@ var SysctlService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListCategories",
 			Handler:    _SysctlService_ListCategories_Handler,
+		},
+		{
+			MethodName: "GetKernelRegistry",
+			Handler:    _SysctlService_GetKernelRegistry_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -29,11 +29,14 @@ Running `LET_IT_RIP.sh` 10 times in a row is fine and expected.
 
 ```
 internal/macosasmsysctl/     ARM64 assembly + Go: direct sysctl via libSystem trampolines
-internal/metrics/            Registry of known sysctl metric names and types
-internal/server/             gRPC server implementation
+                             Includes MIB cache for ~3x faster reads (mibcache.go)
+internal/metrics/            Registry of known metrics (registry.go) + kernel access
+                             pattern classifications (darwin/*.textproto, kernelregistry.go)
+internal/server/             gRPC server: MIB-cached reads, computed aggregates,
+                             kernel registry merging
 proto/sysctlpb/              Protobuf definition + generated Go code
-cmd/server/                  Server binary (default port 50051)
-cmd/client/                  Client binary (-list, -all, or specific metric names)
+cmd/server/                  Server binary (--port 50051, --os-version 24.6.0)
+cmd/client/                  Client binary (-list, -all, -cats, -cat, or metric names)
 ```
 
 ### Assembly approach
@@ -44,6 +47,7 @@ The `macosasmsysctl` package calls `sysctl(3)` and `sysctlbyname(3)` directly vi
 2. `sysctl_darwin_arm64.s` — Assembly `JMP` trampolines to those symbols
 3. `linkname.go` — `//go:linkname` links to `syscall.syscall6` for dispatch
 4. `sysctl.go` — Go wrapper functions (GetString, GetUint64, GetRaw, etc.)
+5. `mibcache.go` — MIB pre-resolution cache (~3x faster reads via `sysctl()` instead of `sysctlbyname()`)
 
 ### Type notes (ARM64 macOS)
 
@@ -54,4 +58,8 @@ Some sysctl values that are traditionally `int32` on x86 return 8 bytes on ARM64
 - **Never push without a green `LET_IT_RIP.sh`** — not just the specific test for what you changed
 - **Never run one-off tests as sufficient** — always validate the full flow
 - Proto changes: edit `proto/sysctlpb/sysctl.proto`, then `setup.sh` regenerates stubs
-- New metrics: add to `internal/metrics/registry.go`
+- New metrics: add to `internal/metrics/registry.go`, then regenerate the kernel registry textproto:
+  ```bash
+  cd internal/metrics/darwin && go run generate_textproto.go
+  ```
+- Access pattern design: see `CACHE_DESIGN.md`

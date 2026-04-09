@@ -9,6 +9,7 @@ package sysctlpb
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -21,6 +22,145 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// How a metric is accessed / cached by the server.
+type AccessPattern int32
+
+const (
+	AccessPattern_ACCESS_PATTERN_UNSPECIFIED AccessPattern = 0 // Inherit default or fall back to DYNAMIC
+	AccessPattern_STATIC                     AccessPattern = 1 // Read once at startup, never refreshed
+	AccessPattern_POLLED                     AccessPattern = 2 // Background refresh at ttl interval, serve from cache
+	AccessPattern_CACHED                     AccessPattern = 3 // Read live, cache for ttl, re-read after expiry
+	AccessPattern_DYNAMIC                    AccessPattern = 4 // Read live on every request
+	AccessPattern_DISABLED                   AccessPattern = 5 // Never read, return error if requested
+)
+
+// Enum value maps for AccessPattern.
+var (
+	AccessPattern_name = map[int32]string{
+		0: "ACCESS_PATTERN_UNSPECIFIED",
+		1: "STATIC",
+		2: "POLLED",
+		3: "CACHED",
+		4: "DYNAMIC",
+		5: "DISABLED",
+	}
+	AccessPattern_value = map[string]int32{
+		"ACCESS_PATTERN_UNSPECIFIED": 0,
+		"STATIC":                     1,
+		"POLLED":                     2,
+		"CACHED":                     3,
+		"DYNAMIC":                    4,
+		"DISABLED":                   5,
+	}
+)
+
+func (x AccessPattern) Enum() *AccessPattern {
+	p := new(AccessPattern)
+	*p = x
+	return p
+}
+
+func (x AccessPattern) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AccessPattern) Descriptor() protoreflect.EnumDescriptor {
+	return file_proto_sysctlpb_sysctl_proto_enumTypes[0].Descriptor()
+}
+
+func (AccessPattern) Type() protoreflect.EnumType {
+	return &file_proto_sysctlpb_sysctl_proto_enumTypes[0]
+}
+
+func (x AccessPattern) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AccessPattern.Descriptor instead.
+func (AccessPattern) EnumDescriptor() ([]byte, []int) {
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{0}
+}
+
+type GetKernelRegistryRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetKernelRegistryRequest) Reset() {
+	*x = GetKernelRegistryRequest{}
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetKernelRegistryRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetKernelRegistryRequest) ProtoMessage() {}
+
+func (x *GetKernelRegistryRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetKernelRegistryRequest.ProtoReflect.Descriptor instead.
+func (*GetKernelRegistryRequest) Descriptor() ([]byte, []int) {
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{0}
+}
+
+type GetKernelRegistryResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Registry      *KernelMetricRegistry  `protobuf:"bytes,1,opt,name=registry,proto3" json:"registry,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetKernelRegistryResponse) Reset() {
+	*x = GetKernelRegistryResponse{}
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetKernelRegistryResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetKernelRegistryResponse) ProtoMessage() {}
+
+func (x *GetKernelRegistryResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetKernelRegistryResponse.ProtoReflect.Descriptor instead.
+func (*GetKernelRegistryResponse) Descriptor() ([]byte, []int) {
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GetKernelRegistryResponse) GetRegistry() *KernelMetricRegistry {
+	if x != nil {
+		return x.Registry
+	}
+	return nil
+}
+
 type GetMetricRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"` // e.g. "hw.memsize", "kern.hostname"
@@ -30,7 +170,7 @@ type GetMetricRequest struct {
 
 func (x *GetMetricRequest) Reset() {
 	*x = GetMetricRequest{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[0]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -42,7 +182,7 @@ func (x *GetMetricRequest) String() string {
 func (*GetMetricRequest) ProtoMessage() {}
 
 func (x *GetMetricRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[0]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -55,7 +195,7 @@ func (x *GetMetricRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMetricRequest.ProtoReflect.Descriptor instead.
 func (*GetMetricRequest) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{0}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetMetricRequest) GetName() string {
@@ -74,7 +214,7 @@ type GetMetricResponse struct {
 
 func (x *GetMetricResponse) Reset() {
 	*x = GetMetricResponse{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[1]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -86,7 +226,7 @@ func (x *GetMetricResponse) String() string {
 func (*GetMetricResponse) ProtoMessage() {}
 
 func (x *GetMetricResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[1]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -99,7 +239,7 @@ func (x *GetMetricResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMetricResponse.ProtoReflect.Descriptor instead.
 func (*GetMetricResponse) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{1}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetMetricResponse) GetMetric() *Metric {
@@ -118,7 +258,7 @@ type GetMetricsRequest struct {
 
 func (x *GetMetricsRequest) Reset() {
 	*x = GetMetricsRequest{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[2]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -130,7 +270,7 @@ func (x *GetMetricsRequest) String() string {
 func (*GetMetricsRequest) ProtoMessage() {}
 
 func (x *GetMetricsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[2]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -143,7 +283,7 @@ func (x *GetMetricsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMetricsRequest.ProtoReflect.Descriptor instead.
 func (*GetMetricsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{2}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetMetricsRequest) GetNames() []string {
@@ -162,7 +302,7 @@ type GetMetricsResponse struct {
 
 func (x *GetMetricsResponse) Reset() {
 	*x = GetMetricsResponse{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[3]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -174,7 +314,7 @@ func (x *GetMetricsResponse) String() string {
 func (*GetMetricsResponse) ProtoMessage() {}
 
 func (x *GetMetricsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[3]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -187,7 +327,7 @@ func (x *GetMetricsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMetricsResponse.ProtoReflect.Descriptor instead.
 func (*GetMetricsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{3}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetMetricsResponse) GetMetrics() []*Metric {
@@ -206,7 +346,7 @@ type GetMetricsByCategoryRequest struct {
 
 func (x *GetMetricsByCategoryRequest) Reset() {
 	*x = GetMetricsByCategoryRequest{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[4]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -218,7 +358,7 @@ func (x *GetMetricsByCategoryRequest) String() string {
 func (*GetMetricsByCategoryRequest) ProtoMessage() {}
 
 func (x *GetMetricsByCategoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[4]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -231,7 +371,7 @@ func (x *GetMetricsByCategoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMetricsByCategoryRequest.ProtoReflect.Descriptor instead.
 func (*GetMetricsByCategoryRequest) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{4}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetMetricsByCategoryRequest) GetCategory() string {
@@ -250,7 +390,7 @@ type ListKnownMetricsRequest struct {
 
 func (x *ListKnownMetricsRequest) Reset() {
 	*x = ListKnownMetricsRequest{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[5]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -262,7 +402,7 @@ func (x *ListKnownMetricsRequest) String() string {
 func (*ListKnownMetricsRequest) ProtoMessage() {}
 
 func (x *ListKnownMetricsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[5]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -275,7 +415,7 @@ func (x *ListKnownMetricsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListKnownMetricsRequest.ProtoReflect.Descriptor instead.
 func (*ListKnownMetricsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{5}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListKnownMetricsRequest) GetCategory() string {
@@ -287,14 +427,14 @@ func (x *ListKnownMetricsRequest) GetCategory() string {
 
 type ListKnownMetricsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Metrics       []*MetricInfo          `protobuf:"bytes,1,rep,name=metrics,proto3" json:"metrics,omitempty"`
+	Registry      *KernelMetricRegistry  `protobuf:"bytes,1,opt,name=registry,proto3" json:"registry,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *ListKnownMetricsResponse) Reset() {
 	*x = ListKnownMetricsResponse{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[6]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -306,7 +446,7 @@ func (x *ListKnownMetricsResponse) String() string {
 func (*ListKnownMetricsResponse) ProtoMessage() {}
 
 func (x *ListKnownMetricsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[6]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -319,12 +459,12 @@ func (x *ListKnownMetricsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListKnownMetricsResponse.ProtoReflect.Descriptor instead.
 func (*ListKnownMetricsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{6}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *ListKnownMetricsResponse) GetMetrics() []*MetricInfo {
+func (x *ListKnownMetricsResponse) GetRegistry() *KernelMetricRegistry {
 	if x != nil {
-		return x.Metrics
+		return x.Registry
 	}
 	return nil
 }
@@ -337,7 +477,7 @@ type ListCategoriesRequest struct {
 
 func (x *ListCategoriesRequest) Reset() {
 	*x = ListCategoriesRequest{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[7]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -349,7 +489,7 @@ func (x *ListCategoriesRequest) String() string {
 func (*ListCategoriesRequest) ProtoMessage() {}
 
 func (x *ListCategoriesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[7]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -362,7 +502,7 @@ func (x *ListCategoriesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCategoriesRequest.ProtoReflect.Descriptor instead.
 func (*ListCategoriesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{7}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{9}
 }
 
 type ListCategoriesResponse struct {
@@ -374,7 +514,7 @@ type ListCategoriesResponse struct {
 
 func (x *ListCategoriesResponse) Reset() {
 	*x = ListCategoriesResponse{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[8]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -386,7 +526,7 @@ func (x *ListCategoriesResponse) String() string {
 func (*ListCategoriesResponse) ProtoMessage() {}
 
 func (x *ListCategoriesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[8]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -399,7 +539,7 @@ func (x *ListCategoriesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCategoriesResponse.ProtoReflect.Descriptor instead.
 func (*ListCategoriesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{8}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListCategoriesResponse) GetCategories() []*CategoryInfo {
@@ -419,7 +559,7 @@ type CategoryInfo struct {
 
 func (x *CategoryInfo) Reset() {
 	*x = CategoryInfo{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[9]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -431,7 +571,7 @@ func (x *CategoryInfo) String() string {
 func (*CategoryInfo) ProtoMessage() {}
 
 func (x *CategoryInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[9]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -444,7 +584,7 @@ func (x *CategoryInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CategoryInfo.ProtoReflect.Descriptor instead.
 func (*CategoryInfo) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{9}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *CategoryInfo) GetName() string {
@@ -483,7 +623,7 @@ type Metric struct {
 
 func (x *Metric) Reset() {
 	*x = Metric{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[10]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -495,7 +635,7 @@ func (x *Metric) String() string {
 func (*Metric) ProtoMessage() {}
 
 func (x *Metric) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[10]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -508,7 +648,7 @@ func (x *Metric) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Metric.ProtoReflect.Descriptor instead.
 func (*Metric) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{10}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Metric) GetName() string {
@@ -659,7 +799,7 @@ type StructValue struct {
 
 func (x *StructValue) Reset() {
 	*x = StructValue{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[11]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -671,7 +811,7 @@ func (x *StructValue) String() string {
 func (*StructValue) ProtoMessage() {}
 
 func (x *StructValue) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[11]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -684,7 +824,7 @@ func (x *StructValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StructValue.ProtoReflect.Descriptor instead.
 func (*StructValue) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{11}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *StructValue) GetTypeName() string {
@@ -714,7 +854,7 @@ type MetricInfo struct {
 
 func (x *MetricInfo) Reset() {
 	*x = MetricInfo{}
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[12]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -726,7 +866,7 @@ func (x *MetricInfo) String() string {
 func (*MetricInfo) ProtoMessage() {}
 
 func (x *MetricInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[12]
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -739,7 +879,7 @@ func (x *MetricInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetricInfo.ProtoReflect.Descriptor instead.
 func (*MetricInfo) Descriptor() ([]byte, []int) {
-	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{12}
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *MetricInfo) GetName() string {
@@ -770,11 +910,225 @@ func (x *MetricInfo) GetCategory() string {
 	return ""
 }
 
+// AccessConfig pairs an access pattern with a TTL.
+// TTL is used by POLLED (poll interval) and CACHED (cache expiry).
+// Ignored for STATIC, DYNAMIC, and DISABLED.
+type AccessConfig struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Pattern       AccessPattern          `protobuf:"varint,1,opt,name=pattern,proto3,enum=sysctl.AccessPattern" json:"pattern,omitempty"`
+	Ttl           *durationpb.Duration   `protobuf:"bytes,2,opt,name=ttl,proto3" json:"ttl,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AccessConfig) Reset() {
+	*x = AccessConfig{}
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AccessConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AccessConfig) ProtoMessage() {}
+
+func (x *AccessConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AccessConfig.ProtoReflect.Descriptor instead.
+func (*AccessConfig) Descriptor() ([]byte, []int) {
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *AccessConfig) GetPattern() AccessPattern {
+	if x != nil {
+		return x.Pattern
+	}
+	return AccessPattern_ACCESS_PATTERN_UNSPECIFIED
+}
+
+func (x *AccessConfig) GetTtl() *durationpb.Duration {
+	if x != nil {
+		return x.Ttl
+	}
+	return nil
+}
+
+// KernelMetric describes a metric: its identity, how the kernel treats it,
+// and what access pattern is recommended for monitoring.
+type KernelMetric struct {
+	state                    protoimpl.MessageState `protogen:"open.v1"`
+	Name                     string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Description              string                 `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`
+	ValueType                string                 `protobuf:"bytes,6,opt,name=value_type,json=valueType,proto3" json:"value_type,omitempty"` // "string", "uint64", "int32", "timeval", etc.
+	Category                 string                 `protobuf:"bytes,7,opt,name=category,proto3" json:"category,omitempty"`
+	KernelAccessPattern      *AccessConfig          `protobuf:"bytes,2,opt,name=kernel_access_pattern,json=kernelAccessPattern,proto3" json:"kernel_access_pattern,omitempty"`                // How the kernel implements it
+	RecommendedAccessPattern *AccessConfig          `protobuf:"bytes,3,opt,name=recommended_access_pattern,json=recommendedAccessPattern,proto3" json:"recommended_access_pattern,omitempty"` // What clients should use
+	Notes                    string                 `protobuf:"bytes,4,opt,name=notes,proto3" json:"notes,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *KernelMetric) Reset() {
+	*x = KernelMetric{}
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KernelMetric) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KernelMetric) ProtoMessage() {}
+
+func (x *KernelMetric) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KernelMetric.ProtoReflect.Descriptor instead.
+func (*KernelMetric) Descriptor() ([]byte, []int) {
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *KernelMetric) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *KernelMetric) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *KernelMetric) GetValueType() string {
+	if x != nil {
+		return x.ValueType
+	}
+	return ""
+}
+
+func (x *KernelMetric) GetCategory() string {
+	if x != nil {
+		return x.Category
+	}
+	return ""
+}
+
+func (x *KernelMetric) GetKernelAccessPattern() *AccessConfig {
+	if x != nil {
+		return x.KernelAccessPattern
+	}
+	return nil
+}
+
+func (x *KernelMetric) GetRecommendedAccessPattern() *AccessConfig {
+	if x != nil {
+		return x.RecommendedAccessPattern
+	}
+	return nil
+}
+
+func (x *KernelMetric) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
+// KernelMetricRegistry is the full set of kernel metric descriptors
+// for a specific OS / architecture combination.
+type KernelMetricRegistry struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	OsRegistry    string                 `protobuf:"bytes,1,opt,name=os_registry,json=osRegistry,proto3" json:"os_registry,omitempty"` // e.g. "darwin-arm64"
+	OsVersion     string                 `protobuf:"bytes,2,opt,name=os_version,json=osVersion,proto3" json:"os_version,omitempty"`    // e.g. "Darwin 24.6.0 / xnu-11417"
+	Metrics       []*KernelMetric        `protobuf:"bytes,3,rep,name=metrics,proto3" json:"metrics,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *KernelMetricRegistry) Reset() {
+	*x = KernelMetricRegistry{}
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *KernelMetricRegistry) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*KernelMetricRegistry) ProtoMessage() {}
+
+func (x *KernelMetricRegistry) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_sysctlpb_sysctl_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use KernelMetricRegistry.ProtoReflect.Descriptor instead.
+func (*KernelMetricRegistry) Descriptor() ([]byte, []int) {
+	return file_proto_sysctlpb_sysctl_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *KernelMetricRegistry) GetOsRegistry() string {
+	if x != nil {
+		return x.OsRegistry
+	}
+	return ""
+}
+
+func (x *KernelMetricRegistry) GetOsVersion() string {
+	if x != nil {
+		return x.OsVersion
+	}
+	return ""
+}
+
+func (x *KernelMetricRegistry) GetMetrics() []*KernelMetric {
+	if x != nil {
+		return x.Metrics
+	}
+	return nil
+}
+
 var File_proto_sysctlpb_sysctl_proto protoreflect.FileDescriptor
 
 const file_proto_sysctlpb_sysctl_proto_rawDesc = "" +
 	"\n" +
-	"\x1bproto/sysctlpb/sysctl.proto\x12\x06sysctl\"&\n" +
+	"\x1bproto/sysctlpb/sysctl.proto\x12\x06sysctl\x1a\x1egoogle/protobuf/duration.proto\"\x1a\n" +
+	"\x18GetKernelRegistryRequest\"U\n" +
+	"\x19GetKernelRegistryResponse\x128\n" +
+	"\bregistry\x18\x01 \x01(\v2\x1c.sysctl.KernelMetricRegistryR\bregistry\"&\n" +
 	"\x10GetMetricRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\";\n" +
 	"\x11GetMetricResponse\x12&\n" +
@@ -786,9 +1140,9 @@ const file_proto_sysctlpb_sysctl_proto_rawDesc = "" +
 	"\x1bGetMetricsByCategoryRequest\x12\x1a\n" +
 	"\bcategory\x18\x01 \x01(\tR\bcategory\"5\n" +
 	"\x17ListKnownMetricsRequest\x12\x1a\n" +
-	"\bcategory\x18\x01 \x01(\tR\bcategory\"H\n" +
-	"\x18ListKnownMetricsResponse\x12,\n" +
-	"\ametrics\x18\x01 \x03(\v2\x12.sysctl.MetricInfoR\ametrics\"\x17\n" +
+	"\bcategory\x18\x01 \x01(\tR\bcategory\"T\n" +
+	"\x18ListKnownMetricsResponse\x128\n" +
+	"\bregistry\x18\x01 \x01(\v2\x1c.sysctl.KernelMetricRegistryR\bregistry\"\x17\n" +
 	"\x15ListCategoriesRequest\"N\n" +
 	"\x16ListCategoriesResponse\x124\n" +
 	"\n" +
@@ -824,14 +1178,43 @@ const file_proto_sysctlpb_sysctl_proto_rawDesc = "" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1d\n" +
 	"\n" +
 	"value_type\x18\x03 \x01(\tR\tvalueType\x12\x1a\n" +
-	"\bcategory\x18\x04 \x01(\tR\bcategory2\x97\x03\n" +
+	"\bcategory\x18\x04 \x01(\tR\bcategory\"l\n" +
+	"\fAccessConfig\x12/\n" +
+	"\apattern\x18\x01 \x01(\x0e2\x15.sysctl.AccessPatternR\apattern\x12+\n" +
+	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\"\xb3\x02\n" +
+	"\fKernelMetric\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12 \n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x12\x1d\n" +
+	"\n" +
+	"value_type\x18\x06 \x01(\tR\tvalueType\x12\x1a\n" +
+	"\bcategory\x18\a \x01(\tR\bcategory\x12H\n" +
+	"\x15kernel_access_pattern\x18\x02 \x01(\v2\x14.sysctl.AccessConfigR\x13kernelAccessPattern\x12R\n" +
+	"\x1arecommended_access_pattern\x18\x03 \x01(\v2\x14.sysctl.AccessConfigR\x18recommendedAccessPattern\x12\x14\n" +
+	"\x05notes\x18\x04 \x01(\tR\x05notes\"\x86\x01\n" +
+	"\x14KernelMetricRegistry\x12\x1f\n" +
+	"\vos_registry\x18\x01 \x01(\tR\n" +
+	"osRegistry\x12\x1d\n" +
+	"\n" +
+	"os_version\x18\x02 \x01(\tR\tosVersion\x12.\n" +
+	"\ametrics\x18\x03 \x03(\v2\x14.sysctl.KernelMetricR\ametrics*n\n" +
+	"\rAccessPattern\x12\x1e\n" +
+	"\x1aACCESS_PATTERN_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06STATIC\x10\x01\x12\n" +
+	"\n" +
+	"\x06POLLED\x10\x02\x12\n" +
+	"\n" +
+	"\x06CACHED\x10\x03\x12\v\n" +
+	"\aDYNAMIC\x10\x04\x12\f\n" +
+	"\bDISABLED\x10\x052\xf1\x03\n" +
 	"\rSysctlService\x12@\n" +
 	"\tGetMetric\x12\x18.sysctl.GetMetricRequest\x1a\x19.sysctl.GetMetricResponse\x12C\n" +
 	"\n" +
 	"GetMetrics\x12\x19.sysctl.GetMetricsRequest\x1a\x1a.sysctl.GetMetricsResponse\x12W\n" +
 	"\x14GetMetricsByCategory\x12#.sysctl.GetMetricsByCategoryRequest\x1a\x1a.sysctl.GetMetricsResponse\x12U\n" +
 	"\x10ListKnownMetrics\x12\x1f.sysctl.ListKnownMetricsRequest\x1a .sysctl.ListKnownMetricsResponse\x12O\n" +
-	"\x0eListCategories\x12\x1d.sysctl.ListCategoriesRequest\x1a\x1e.sysctl.ListCategoriesResponseB.Z,github.com/accretional/sysctl/proto/sysctlpbb\x06proto3"
+	"\x0eListCategories\x12\x1d.sysctl.ListCategoriesRequest\x1a\x1e.sysctl.ListCategoriesResponse\x12X\n" +
+	"\x11GetKernelRegistry\x12 .sysctl.GetKernelRegistryRequest\x1a!.sysctl.GetKernelRegistryResponseB.Z,github.com/accretional/sysctl/proto/sysctlpbb\x06proto3"
 
 var (
 	file_proto_sysctlpb_sysctl_proto_rawDescOnce sync.Once
@@ -845,45 +1228,61 @@ func file_proto_sysctlpb_sysctl_proto_rawDescGZIP() []byte {
 	return file_proto_sysctlpb_sysctl_proto_rawDescData
 }
 
-var file_proto_sysctlpb_sysctl_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_proto_sysctlpb_sysctl_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_proto_sysctlpb_sysctl_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_proto_sysctlpb_sysctl_proto_goTypes = []any{
-	(*GetMetricRequest)(nil),            // 0: sysctl.GetMetricRequest
-	(*GetMetricResponse)(nil),           // 1: sysctl.GetMetricResponse
-	(*GetMetricsRequest)(nil),           // 2: sysctl.GetMetricsRequest
-	(*GetMetricsResponse)(nil),          // 3: sysctl.GetMetricsResponse
-	(*GetMetricsByCategoryRequest)(nil), // 4: sysctl.GetMetricsByCategoryRequest
-	(*ListKnownMetricsRequest)(nil),     // 5: sysctl.ListKnownMetricsRequest
-	(*ListKnownMetricsResponse)(nil),    // 6: sysctl.ListKnownMetricsResponse
-	(*ListCategoriesRequest)(nil),       // 7: sysctl.ListCategoriesRequest
-	(*ListCategoriesResponse)(nil),      // 8: sysctl.ListCategoriesResponse
-	(*CategoryInfo)(nil),                // 9: sysctl.CategoryInfo
-	(*Metric)(nil),                      // 10: sysctl.Metric
-	(*StructValue)(nil),                 // 11: sysctl.StructValue
-	(*MetricInfo)(nil),                  // 12: sysctl.MetricInfo
-	nil,                                 // 13: sysctl.StructValue.FieldsEntry
+	(AccessPattern)(0),                  // 0: sysctl.AccessPattern
+	(*GetKernelRegistryRequest)(nil),    // 1: sysctl.GetKernelRegistryRequest
+	(*GetKernelRegistryResponse)(nil),   // 2: sysctl.GetKernelRegistryResponse
+	(*GetMetricRequest)(nil),            // 3: sysctl.GetMetricRequest
+	(*GetMetricResponse)(nil),           // 4: sysctl.GetMetricResponse
+	(*GetMetricsRequest)(nil),           // 5: sysctl.GetMetricsRequest
+	(*GetMetricsResponse)(nil),          // 6: sysctl.GetMetricsResponse
+	(*GetMetricsByCategoryRequest)(nil), // 7: sysctl.GetMetricsByCategoryRequest
+	(*ListKnownMetricsRequest)(nil),     // 8: sysctl.ListKnownMetricsRequest
+	(*ListKnownMetricsResponse)(nil),    // 9: sysctl.ListKnownMetricsResponse
+	(*ListCategoriesRequest)(nil),       // 10: sysctl.ListCategoriesRequest
+	(*ListCategoriesResponse)(nil),      // 11: sysctl.ListCategoriesResponse
+	(*CategoryInfo)(nil),                // 12: sysctl.CategoryInfo
+	(*Metric)(nil),                      // 13: sysctl.Metric
+	(*StructValue)(nil),                 // 14: sysctl.StructValue
+	(*MetricInfo)(nil),                  // 15: sysctl.MetricInfo
+	(*AccessConfig)(nil),                // 16: sysctl.AccessConfig
+	(*KernelMetric)(nil),                // 17: sysctl.KernelMetric
+	(*KernelMetricRegistry)(nil),        // 18: sysctl.KernelMetricRegistry
+	nil,                                 // 19: sysctl.StructValue.FieldsEntry
+	(*durationpb.Duration)(nil),         // 20: google.protobuf.Duration
 }
 var file_proto_sysctlpb_sysctl_proto_depIdxs = []int32{
-	10, // 0: sysctl.GetMetricResponse.metric:type_name -> sysctl.Metric
-	10, // 1: sysctl.GetMetricsResponse.metrics:type_name -> sysctl.Metric
-	12, // 2: sysctl.ListKnownMetricsResponse.metrics:type_name -> sysctl.MetricInfo
-	9,  // 3: sysctl.ListCategoriesResponse.categories:type_name -> sysctl.CategoryInfo
-	11, // 4: sysctl.Metric.struct_value:type_name -> sysctl.StructValue
-	13, // 5: sysctl.StructValue.fields:type_name -> sysctl.StructValue.FieldsEntry
-	0,  // 6: sysctl.SysctlService.GetMetric:input_type -> sysctl.GetMetricRequest
-	2,  // 7: sysctl.SysctlService.GetMetrics:input_type -> sysctl.GetMetricsRequest
-	4,  // 8: sysctl.SysctlService.GetMetricsByCategory:input_type -> sysctl.GetMetricsByCategoryRequest
-	5,  // 9: sysctl.SysctlService.ListKnownMetrics:input_type -> sysctl.ListKnownMetricsRequest
-	7,  // 10: sysctl.SysctlService.ListCategories:input_type -> sysctl.ListCategoriesRequest
-	1,  // 11: sysctl.SysctlService.GetMetric:output_type -> sysctl.GetMetricResponse
-	3,  // 12: sysctl.SysctlService.GetMetrics:output_type -> sysctl.GetMetricsResponse
-	3,  // 13: sysctl.SysctlService.GetMetricsByCategory:output_type -> sysctl.GetMetricsResponse
-	6,  // 14: sysctl.SysctlService.ListKnownMetrics:output_type -> sysctl.ListKnownMetricsResponse
-	8,  // 15: sysctl.SysctlService.ListCategories:output_type -> sysctl.ListCategoriesResponse
-	11, // [11:16] is the sub-list for method output_type
-	6,  // [6:11] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	18, // 0: sysctl.GetKernelRegistryResponse.registry:type_name -> sysctl.KernelMetricRegistry
+	13, // 1: sysctl.GetMetricResponse.metric:type_name -> sysctl.Metric
+	13, // 2: sysctl.GetMetricsResponse.metrics:type_name -> sysctl.Metric
+	18, // 3: sysctl.ListKnownMetricsResponse.registry:type_name -> sysctl.KernelMetricRegistry
+	12, // 4: sysctl.ListCategoriesResponse.categories:type_name -> sysctl.CategoryInfo
+	14, // 5: sysctl.Metric.struct_value:type_name -> sysctl.StructValue
+	19, // 6: sysctl.StructValue.fields:type_name -> sysctl.StructValue.FieldsEntry
+	0,  // 7: sysctl.AccessConfig.pattern:type_name -> sysctl.AccessPattern
+	20, // 8: sysctl.AccessConfig.ttl:type_name -> google.protobuf.Duration
+	16, // 9: sysctl.KernelMetric.kernel_access_pattern:type_name -> sysctl.AccessConfig
+	16, // 10: sysctl.KernelMetric.recommended_access_pattern:type_name -> sysctl.AccessConfig
+	17, // 11: sysctl.KernelMetricRegistry.metrics:type_name -> sysctl.KernelMetric
+	3,  // 12: sysctl.SysctlService.GetMetric:input_type -> sysctl.GetMetricRequest
+	5,  // 13: sysctl.SysctlService.GetMetrics:input_type -> sysctl.GetMetricsRequest
+	7,  // 14: sysctl.SysctlService.GetMetricsByCategory:input_type -> sysctl.GetMetricsByCategoryRequest
+	8,  // 15: sysctl.SysctlService.ListKnownMetrics:input_type -> sysctl.ListKnownMetricsRequest
+	10, // 16: sysctl.SysctlService.ListCategories:input_type -> sysctl.ListCategoriesRequest
+	1,  // 17: sysctl.SysctlService.GetKernelRegistry:input_type -> sysctl.GetKernelRegistryRequest
+	4,  // 18: sysctl.SysctlService.GetMetric:output_type -> sysctl.GetMetricResponse
+	6,  // 19: sysctl.SysctlService.GetMetrics:output_type -> sysctl.GetMetricsResponse
+	6,  // 20: sysctl.SysctlService.GetMetricsByCategory:output_type -> sysctl.GetMetricsResponse
+	9,  // 21: sysctl.SysctlService.ListKnownMetrics:output_type -> sysctl.ListKnownMetricsResponse
+	11, // 22: sysctl.SysctlService.ListCategories:output_type -> sysctl.ListCategoriesResponse
+	2,  // 23: sysctl.SysctlService.GetKernelRegistry:output_type -> sysctl.GetKernelRegistryResponse
+	18, // [18:24] is the sub-list for method output_type
+	12, // [12:18] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_proto_sysctlpb_sysctl_proto_init() }
@@ -891,7 +1290,7 @@ func file_proto_sysctlpb_sysctl_proto_init() {
 	if File_proto_sysctlpb_sysctl_proto != nil {
 		return
 	}
-	file_proto_sysctlpb_sysctl_proto_msgTypes[10].OneofWrappers = []any{
+	file_proto_sysctlpb_sysctl_proto_msgTypes[12].OneofWrappers = []any{
 		(*Metric_StringValue)(nil),
 		(*Metric_Uint64Value)(nil),
 		(*Metric_Int64Value)(nil),
@@ -905,13 +1304,14 @@ func file_proto_sysctlpb_sysctl_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_sysctlpb_sysctl_proto_rawDesc), len(file_proto_sysctlpb_sysctl_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   14,
+			NumEnums:      1,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_proto_sysctlpb_sysctl_proto_goTypes,
 		DependencyIndexes: file_proto_sysctlpb_sysctl_proto_depIdxs,
+		EnumInfos:         file_proto_sysctlpb_sysctl_proto_enumTypes,
 		MessageInfos:      file_proto_sysctlpb_sysctl_proto_msgTypes,
 	}.Build()
 	File_proto_sysctlpb_sysctl_proto = out.File

@@ -16,6 +16,7 @@ import (
 
 func main() {
 	port := flag.Int("port", 50051, "gRPC server port")
+	osVersion := flag.String("os-version", "24.6.0", "Darwin kernel version for kernel registry")
 	flag.Parse()
 
 	addr := fmt.Sprintf(":%d", *port)
@@ -25,7 +26,7 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	pb.RegisterSysctlServiceServer(s, server.New())
+	pb.RegisterSysctlServiceServer(s, server.New(*osVersion))
 
 	log.Printf("sysctl gRPC server listening on %s", addr)
 	if err := s.Serve(lis); err != nil {

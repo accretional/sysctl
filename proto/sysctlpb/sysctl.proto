@@ -4,6 +4,8 @@ package sysctl;
 
 option go_package = "github.com/accretional/sysctl/proto/sysctlpb";
 
+import "google/protobuf/duration.proto";
+
 // SysctlService provides access to macOS kernel metrics via sysctl.
 service SysctlService {
   // GetMetric returns a single sysctl metric by name.
@@ -20,6 +22,14 @@ service SysctlService {
 
   // ListCategories returns all metric categories.
   rpc ListCategories(ListCategoriesRequest) returns (ListCategoriesResponse);
+
+  // GetKernelRegistry returns the kernel metric registry for this platform.
+  rpc GetKernelRegistry(GetKernelRegistryRequest) returns (GetKernelRegistryResponse);
+}
+
+message GetKernelRegistryRequest {}
+message GetKernelRegistryResponse {
+  KernelMetricRegistry registry = 1;
 }
 
 message GetMetricRequest {
@@ -47,7 +57,7 @@ message ListKnownMetricsRequest {
 }
 
 message ListKnownMetricsResponse {
-  repeated MetricInfo metrics = 1;
+  KernelMetricRegistry registry = 1;
 }
 
 message ListCategoriesRequest {}
@@ -89,4 +99,42 @@ message MetricInfo {
   string description = 2;
   string value_type = 3; // "string", "uint64", "int32", "timeval", "loadavg", etc.
   string category = 4;
+}
+
+// How a metric is accessed / cached by the server.
+enum AccessPattern {
+  ACCESS_PATTERN_UNSPECIFIED = 0;  // Inherit default or fall back to DYNAMIC
+  STATIC = 1;                     // Read once at startup, never refreshed
+  POLLED = 2;                     // Background refresh at ttl interval, serve from cache
+  CACHED = 3;                     // Read live, cache for ttl, re-read after expiry
+  DYNAMIC = 4;                    // Read live on every request
+  DISABLED = 5;                   // Never read, return error if requested
+}
+
+// AccessConfig pairs an access pattern with a TTL.
+// TTL is used by POLLED (poll interval) and CACHED (cache expiry).
+// Ignored for STATIC, DYNAMIC, and DISABLED.
+message AccessConfig {
+  AccessPattern pattern = 1;
+  google.protobuf.Duration ttl = 2;
+}
+
+// KernelMetric describes a metric: its identity, how the kernel treats it,
+// and what access pattern is recommended for monitoring.
+message KernelMetric {
+  string name = 1;
+  string description = 5;
+  string value_type = 6;   // "string", "uint64", "int32", "timeval", etc.
+  string category = 7;
+  AccessConfig kernel_access_pattern = 2;     // How the kernel implements it
+  AccessConfig recommended_access_pattern = 3; // What clients should use
+  string notes = 4;
+}
+
+// KernelMetricRegistry is the full set of kernel metric descriptors
+// for a specific OS / architecture combination.
+message KernelMetricRegistry {
+  string os_registry = 1;  // e.g. "darwin-arm64"
+  string os_version = 2;   // e.g. "Darwin 24.6.0 / xnu-11417"
+  repeated KernelMetric metrics = 3;
 }

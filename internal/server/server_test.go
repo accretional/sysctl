@@ -20,7 +20,7 @@ func startTestServer(t *testing.T) pb.SysctlServiceClient {
 	t.Helper()
 	lis := bufconn.Listen(bufSize)
 	s := grpc.NewServer()
-	pb.RegisterSysctlServiceServer(s, New())
+	pb.RegisterSysctlServiceServer(s, New("24.6.0"))
 
 	go func() {
 		if err := s.Serve(lis); err != nil {
@@ -115,13 +115,54 @@ func TestListKnownMetrics(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListKnownMetrics: %v", err)
 	}
-	if len(resp.Metrics) == 0 {
+	reg := resp.Registry
+	if reg == nil || len(reg.Metrics) == 0 {
 		t.Fatal("no known metrics returned")
 	}
-	for _, m := range resp.Metrics {
+	for _, m := range reg.Metrics {
 		if m.Name == "" || m.ValueType == "" {
 			t.Errorf("metric missing name or type: %v", m)
 		}
+		if m.KernelAccessPattern == nil {
+			t.Errorf("metric %s missing kernel_access_pattern", m.Name)
+		}
+		if m.RecommendedAccessPattern == nil {
+			t.Errorf("metric %s missing recommended_access_pattern", m.Name)
+		}
 	}
-	t.Logf("listed %d known metrics", len(resp.Metrics))
+	t.Logf("listed %d known metrics (%s %s)", len(reg.Metrics), reg.OsRegistry, reg.OsVersion)
+}
+
+func TestListKnownMetrics_CategoryFilter(t *testing.T) {
+	client := startTestServer(t)
+	resp, err := client.ListKnownMetrics(context.Background(), &pb.ListKnownMetricsRequest{Category: "hw.cpu"})
+	if err != nil {
+		t.Fatalf("ListKnownMetrics(hw.cpu): %v", err)
+	}
+	reg := resp.Registry
+	if reg == nil || len(reg.Metrics) == 0 {
+		t.Fatal("no hw.cpu metrics returned")
+	}
+	for _, m := range reg.Metrics {
+		if m.Category != "hw.cpu" {
+			t.Errorf("got category %q, want hw.cpu", m.Category)
+		}
+	}
+	t.Logf("hw.cpu has %d metrics", len(reg.Metrics))
+}
+
+func TestGetKernelRegistry(t *testing.T) {
+	client := startTestServer(t)
+	resp, err := client.GetKernelRegistry(context.Background(), &pb.GetKernelRegistryRequest{})
+	if err != nil {
+		t.Fatalf("GetKernelRegistry: %v", err)
+	}
+	reg := resp.Registry
+	if reg == nil || len(reg.Metrics) == 0 {
+		t.Fatal("no metrics in kernel registry")
+	}
+	if reg.OsRegistry != "darwin-arm64" {
+		t.Errorf("os_registry = %q, want darwin-arm64", reg.OsRegistry)
+	}
+	t.Logf("kernel registry: %d metrics (%s %s)", len(reg.Metrics), reg.OsRegistry, reg.OsVersion)
 }

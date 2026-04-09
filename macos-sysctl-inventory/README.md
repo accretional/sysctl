@@ -2,7 +2,7 @@
 
 ## Overview
 
-macOS exposes ~1,695 sysctl keys. We currently implement 243 across 31 categories. This document records our triage findings: what to implement, what to skip, batch/aggregate API capabilities, and the reasoning behind each decision.
+macOS exposes ~1,695 sysctl keys. We implement 250 across 32 categories (including 7 server-side computed aggregates). Each metric has a kernel access pattern classification in `internal/metrics/darwin/24.6.0.textproto` — see `CACHE_DESIGN.md` for the access pattern model. This document records triage findings: what to implement, what to skip, and the reasoning behind each decision.
 
 ## Batch / Aggregate API Findings
 
@@ -16,11 +16,11 @@ The kernel provides `CTL_SYSCTL_NEXT` (MIB `{0, 2}`) for enumerating the entire 
 
 ### MIB Pre-Resolution: sysctlnametomib
 
-`sysctlnametomib()` resolves a dotted name (e.g., `vm.page_free_count`) to its integer MIB array once. Subsequent reads via `sysctl()` with the MIB are ~3x faster than `sysctlbyname()` because they skip name resolution. **Recommendation**: For tier-1 metrics polled at 10-30s intervals, pre-resolve MIBs at startup and use the MIB-based path.
+`sysctlnametomib()` resolves a dotted name (e.g., `vm.page_free_count`) to its integer MIB array once. Subsequent reads via `sysctl()` with the MIB are ~3x faster than `sysctlbyname()` because they skip name resolution. **Implemented**: The server pre-resolves all 243 sysctl MIBs at startup via `MIBCache.Warm()` and uses MIB-based reads for all requests.
 
 ### Computed Aggregate Metrics (Server-Side)
 
-Since no kernel-side aggregation exists, the server should compute these from individual reads:
+Since no kernel-side aggregation exists, the server computes these from individual reads (implemented as `computed.*` metrics):
 
 | Aggregate Metric | Formula | Source Keys |
 |---|---|---|
@@ -56,12 +56,12 @@ Dynamic counters that change frequently under normal load. These are the core te
 - `kern.memorystatus_level` — memory pressure percentage
 - `kern.monotonicclock_usecs` — monotonic time
 
-**Should add (confirmed dynamic, byte sizes verified):**
-- `net.soflow.count` — socket flow count (int64, 8 bytes) — changes with network activity
-- `security.mac.vnode_label_count` — vnode MAC labels (int32, 4 bytes) — tracks labeling activity
-- `vfs.vnstats.num_dead_vnodes` — dead vnodes (int64, 8 bytes) — reclamation pressure indicator
-- `security.mac.asp.stats.exec_hook_count` — exec hook invocations (int64, 8 bytes) — process launch rate proxy
-- `security.mac.asp.stats.library_hook_count` — library hook invocations (int64, 8 bytes) — dylib load rate
+**Added (confirmed dynamic, byte sizes verified):**
+- `net.soflow.count` — socket flow count (int64, 8 bytes)
+- `security.mac.vnode_label_count` — vnode MAC labels (int32, 4 bytes)
+- `vfs.vnstats.num_dead_vnodes` — dead vnodes (int64, 8 bytes)
+- `security.mac.asp.stats.exec_hook_count` — exec hook invocations (int64, 8 bytes)
+- `security.mac.asp.stats.library_hook_count` — library hook invocations (int64, 8 bytes)
 - `security.mac.asp.stats.exec_hook_work_time` — exec hook time (int64, 8 bytes)
 - `security.mac.asp.stats.library_hook_time` — library hook time (int64, 8 bytes)
 - `net.inet.mptcp.pcbcount` — MPTCP connections (int32, 4 bytes)
@@ -81,41 +81,37 @@ Slow-changing configuration or low-frequency counters.
 - `machdep.time_since_reset`, `machdep.wake_abstime` — timing
 - `kern.hibernatecount` — hibernate events
 
-### Tier 3 — Startup Inventory (Read Once)
+### Tier 3 — Startup Inventory (recommended: read once / poll infrequently)
 
-Static hardware/software configuration. Read at server start, serve from cache.
+Hardware immutables and rarely-changed tunables. Recommended as STATIC or POLLED@60s.
 
-**Currently implemented (correct):**
-- All `hw.*` keys (CPU topology, memory sizes, cache hierarchy, perflevel, ARM features)
-- `kern.os*`, `kern.version`, `kern.hostname`, `kern.uuid`, `kern.bootuuid` — identity
-- `kern.maxproc`, `kern.maxfiles`, `kern.maxvnodes`, etc. — limits
-- `kern.boottime`, `kern.sleeptime`, `kern.waketime` — boot timestamps
-- `kern.clockrate` — clock info struct
-- `kern.hv_support`, `kern.secure_kernel`, `kern.safeboot` — boot config
-- `machdep.cpu.*` — CPU identification
-- All `net.inet.tcp.*` config (mssdflt, keepidle, sendspace, etc.)
-- `debug.*`, `kpc.*`, `iogpu.*`
+Note: many of these (limits, IPC, sched, net config) are writable tunables — the kernel CAN change them at runtime — so their `kernel_access_pattern` is DYNAMIC. But in practice they rarely change, so `recommended_access_pattern` is STATIC or POLLED@60s.
+
+**Implemented:**
+- All `hw.*` keys (CPU topology, memory sizes, cache hierarchy, perflevel, ARM features) — truly STATIC
+- `kern.os*`, `kern.version`, `kern.uuid`, `kern.bootuuid` — STATIC (immutable per boot)
+- `kern.hostname` — DYNAMIC at kernel level (writable), recommended STATIC
+- `kern.maxproc`, `kern.maxfiles`, `kern.maxvnodes`, etc. — writable tunables, recommended POLLED@60s
+- `kern.boottime`, `kern.clockrate` — STATIC
+- `kern.hv_support`, `kern.secure_kernel`, `kern.safeboot` — STATIC (boot-time flags)
+- `machdep.cpu.*` — STATIC (CPU identification)
+- `net.inet.tcp.*` config (mssdflt, keepidle, sendspace, etc.) — writable, recommended POLLED@60s
+- `debug.*`, `kpc.*`, `iogpu.*` — writable, recommended POLLED@60s
 
 ### Tier 4 — Skip / Noise
 
 Keys that should NOT be implemented because they return no useful data, are static limits masquerading as counters, or are irrelevant to performance telemetry.
 
-**Registry entries to demote/fix:**
+**Registry entries demoted/fixed (all done):**
 
-| Key | Problem | Action |
+| Key | Problem | Resolution |
 |---|---|---|
-| `kern.num_tasks` | Returns 4096 always — it's the static task limit, NOT a live count | Fix description: "Task limit (not live count)" and move to `kern.limits` |
-| `kern.num_threads` | Returns 20480 always — static thread limit | Fix description: "Thread limit (not live count)" and move to `kern.limits` |
-| `kern.num_taskthreads` | Returns 4096 always — static limit | Fix description: "Threads-per-task limit (not live count)" and move to `kern.limits` |
-| `vm.wk_compressions` | Always 0 on Apple Silicon M4 | Remove — kernel uses different compressor |
-| `vm.wk_compressed_bytes_total` | Always 0 | Remove |
-| `vm.wk_decompressions` | Always 0 | Remove |
-| `vm.wk_decompressed_bytes` | Always 0 | Remove |
-| `vm.lz4_compressions` | Always 0 on Apple Silicon M4 | Remove |
-| `vm.lz4_compressed_bytes` | Always 0 | Remove |
-| `vm.lz4_decompressions` | Always 0 | Remove |
-| `vm.lz4_compression_failures` | Always 0 | Remove |
-| `vm.loadavg` | Miscategorized under `vm.swap` | Move to `kern.time` or `vm.misc` — it's not swap-related |
+| `kern.num_tasks` | Returns 4096 always — static task limit | Moved to `kern.limits`, description updated |
+| `kern.num_threads` | Returns 20480 always — static thread limit | Moved to `kern.limits`, description updated |
+| `kern.num_taskthreads` | Returns 4096 always — static limit | Moved to `kern.limits`, description updated |
+| `vm.wk_*` (4 keys) | Always 0 on Apple Silicon M4 | Removed — kernel uses different compressor |
+| `vm.lz4_*` (4 keys) | Always 0 on Apple Silicon M4 | Removed |
+| `vm.loadavg` | Miscategorized under `vm.swap` | Moved to `vm.misc` |
 
 **Entire subtrees to skip (~1,400 keys):**
 - `kern.tty.*` — terminal driver internals (irrelevant to server telemetry)
@@ -187,18 +183,12 @@ These were discovered empirically and are critical for correct implementation:
 
 ## Next Steps
 
-### Phase 5: Background Polling Loop
-The server currently reads sysctl values on-demand per gRPC request (using MIB-cached reads for speed). The next step is a background polling loop with tiered intervals:
-- **Tier 1** (10-30s): Dynamic counters (VM pages, compressor, pageout, connections, VFS, security hooks) — serve from a hot snapshot cache
-- **Tier 2** (60-300s): Slow-changing config (pressure thresholds, compressor state, wire limits, idle level)
-- **Tier 3** (read once at startup): Static hardware/software config (all hw.*, kern identity, limits, net config)
+See `CACHE_DESIGN.md` for the full roadmap. Summary:
 
-This would decouple read latency from gRPC response time and enable consistent point-in-time snapshots.
-
-### Phase 6: Export / Observability
-- Prometheus metrics endpoint
-- Streaming gRPC (server-push on change)
-- TSDB push integration
+- **Phase 5**: Background polling loop — enforce STATIC/POLLED/DYNAMIC access patterns with real caching
+- **Phase 6**: Service-level config overrides (operator `--config` textproto)
+- **Phase 7**: Client access masks (monotonic decrease in access frequency)
+- **Phase 8**: Export / observability (Prometheus, streaming gRPC, TSDB)
 
 ## Data Sources
 

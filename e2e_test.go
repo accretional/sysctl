@@ -23,7 +23,7 @@ func TestE2E_FullFlow(t *testing.T) {
 	// Start server on bufconn.
 	lis := bufconn.Listen(bufSize)
 	s := grpc.NewServer()
-	pb.RegisterSysctlServiceServer(s, server.New())
+	pb.RegisterSysctlServiceServer(s, server.New("24.6.0"))
 	go func() { s.Serve(lis) }()
 	t.Cleanup(func() { s.Stop() })
 
@@ -48,10 +48,11 @@ func TestE2E_FullFlow(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListKnownMetrics: %v", err)
 	}
-	if len(listResp.Metrics) == 0 {
+	reg := listResp.Registry
+	if reg == nil || len(reg.Metrics) == 0 {
 		t.Fatal("no known metrics")
 	}
-	t.Logf("server reports %d known metrics", len(listResp.Metrics))
+	t.Logf("server reports %d known metrics (%s %s)", len(reg.Metrics), reg.OsRegistry, reg.OsVersion)
 
 	// 2. Fetch a single metric.
 	getResp, err := client.GetMetric(ctx, &pb.GetMetricRequest{Name: "kern.ostype"})
@@ -68,8 +69,8 @@ func TestE2E_FullFlow(t *testing.T) {
 	t.Log("kern.ostype = Darwin ✓")
 
 	// 3. Fetch multiple metrics.
-	names := make([]string, len(listResp.Metrics))
-	for i, m := range listResp.Metrics {
+	names := make([]string, len(reg.Metrics))
+	for i, m := range reg.Metrics {
 		names[i] = m.Name
 	}
 	multiResp, err := client.GetMetrics(ctx, &pb.GetMetricsRequest{Names: names})

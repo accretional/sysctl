@@ -53,10 +53,18 @@ func main() {
 		if err != nil {
 			log.Fatalf("ListKnownMetrics: %v", err)
 		}
-		for _, m := range resp.Metrics {
-			fmt.Printf("%-50s %-8s %s\n", m.Name, m.ValueType, m.Description)
+		reg := resp.Registry
+		for _, m := range reg.Metrics {
+			recPattern := ""
+			if m.RecommendedAccessPattern != nil {
+				recPattern = m.RecommendedAccessPattern.Pattern.String()
+				if m.RecommendedAccessPattern.Ttl != nil {
+					recPattern += fmt.Sprintf("@%ds", m.RecommendedAccessPattern.Ttl.Seconds)
+				}
+			}
+			fmt.Printf("%-50s %-8s %-12s %s\n", m.Name, m.ValueType, recPattern, m.Description)
 		}
-		fmt.Fprintf(os.Stderr, "\n%d metrics\n", len(resp.Metrics))
+		fmt.Fprintf(os.Stderr, "\n%d metrics (%s %s)\n", len(reg.Metrics), reg.OsRegistry, reg.OsVersion)
 		return
 	}
 
@@ -76,8 +84,8 @@ func main() {
 		if err != nil {
 			log.Fatalf("ListKnownMetrics: %v", err)
 		}
-		names := make([]string, len(listResp.Metrics))
-		for i, m := range listResp.Metrics {
+		names := make([]string, len(listResp.Registry.Metrics))
+		for i, m := range listResp.Registry.Metrics {
 			names[i] = m.Name
 		}
 		resp, err := client.GetMetrics(ctx, &pb.GetMetricsRequest{Names: names})
