@@ -6,6 +6,7 @@ package server
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/accretional/sysctl/internal/macosasmsysctl"
 	"github.com/accretional/sysctl/internal/metrics"
@@ -15,15 +16,29 @@ import (
 // SysctlServer implements the SysctlService gRPC service.
 type SysctlServer struct {
 	pb.UnimplementedSysctlServiceServer
+	cache *macosasmsysctl.MIBCache
 }
 
-// New returns a new SysctlServer.
+// New returns a new SysctlServer with a warmed MIB cache.
 func New() *SysctlServer {
-	return &SysctlServer{}
+	s := &SysctlServer{
+		cache: macosasmsysctl.NewMIBCache(),
+	}
+
+	// Pre-resolve MIBs for all known non-computed metrics.
+	names := make([]string, 0, len(metrics.Known))
+	for _, info := range metrics.Known {
+		if info.Type != metrics.TypeComputed {
+			names = append(names, info.Name)
+		}
+	}
+	s.cache.Warm(names)
+
+	return s
 }
 
 func (s *SysctlServer) GetMetric(_ context.Context, req *pb.GetMetricRequest) (*pb.GetMetricResponse, error) {
-	m := readMetric(req.Name)
+	m := s.readMetric(req.Name)
 	return &pb.GetMetricResponse{Metric: m}, nil
 }
 
@@ -32,7 +47,7 @@ func (s *SysctlServer) GetMetrics(_ context.Context, req *pb.GetMetricsRequest) 
 		Metrics: make([]*pb.Metric, len(req.Names)),
 	}
 	for i, name := range req.Names {
-		resp.Metrics[i] = readMetric(name)
+		resp.Metrics[i] = s.readMetric(name)
 	}
 	return resp, nil
 }
@@ -44,7 +59,7 @@ func (s *SysctlServer) GetMetricsByCategory(_ context.Context, req *pb.GetMetric
 		Metrics: make([]*pb.Metric, len(infos)),
 	}
 	for i, info := range infos {
-		resp.Metrics[i] = readMetric(info.Name)
+		resp.Metrics[i] = s.readMetric(info.Name)
 	}
 	return resp, nil
 }
@@ -78,7 +93,7 @@ func (s *SysctlServer) ListCategories(_ context.Context, _ *pb.ListCategoriesReq
 	return resp, nil
 }
 
-func readMetric(name string) *pb.Metric {
+func (s *SysctlServer) readMetric(name string) *pb.Metric {
 	info := metrics.ByName(name)
 
 	m := &pb.Metric{Name: name}
@@ -88,7 +103,7 @@ func readMetric(name string) *pb.Metric {
 
 	if info == nil {
 		// Unknown metric — try as raw bytes.
-		raw, err := macosasmsysctl.GetRaw(name)
+		raw, err := s.cache.GetRaw(name)
 		if err != nil {
 			m.Error = err.Error()
 			return m
@@ -97,9 +112,13 @@ func readMetric(name string) *pb.Metric {
 		return m
 	}
 
+	if info.Type == metrics.TypeComputed {
+		return s.readComputed(name, m)
+	}
+
 	switch info.Type {
 	case metrics.TypeString:
-		v, err := macosasmsysctl.GetString(name)
+		v, err := s.cache.GetString(name)
 		if err != nil {
 			m.Error = err.Error()
 			return m
@@ -107,7 +126,7 @@ func readMetric(name string) *pb.Metric {
 		m.Value = &pb.Metric_StringValue{StringValue: v}
 
 	case metrics.TypeUint64:
-		v, err := macosasmsysctl.GetUint64(name)
+		v, err := s.cache.GetUint64(name)
 		if err != nil {
 			m.Error = err.Error()
 			return m
@@ -115,7 +134,7 @@ func readMetric(name string) *pb.Metric {
 		m.Value = &pb.Metric_Uint64Value{Uint64Value: v}
 
 	case metrics.TypeUint32:
-		v, err := macosasmsysctl.GetUint32(name)
+		v, err := s.cache.GetUint32(name)
 		if err != nil {
 			m.Error = err.Error()
 			return m
@@ -123,7 +142,7 @@ func readMetric(name string) *pb.Metric {
 		m.Value = &pb.Metric_Uint32Value{Uint32Value: v}
 
 	case metrics.TypeInt32:
-		v, err := macosasmsysctl.GetInt32(name)
+		v, err := s.cache.GetInt32(name)
 		if err != nil {
 			m.Error = err.Error()
 			return m
@@ -131,7 +150,7 @@ func readMetric(name string) *pb.Metric {
 		m.Value = &pb.Metric_Int32Value{Int32Value: v}
 
 	case metrics.TypeInt64:
-		v, err := macosasmsysctl.GetInt64(name)
+		v, err := s.cache.GetInt64(name)
 		if err != nil {
 			m.Error = err.Error()
 			return m
@@ -139,7 +158,7 @@ func readMetric(name string) *pb.Metric {
 		m.Value = &pb.Metric_Int64Value{Int64Value: v}
 
 	case metrics.TypeTimeval:
-		tv, err := macosasmsysctl.GetTimeval(name)
+		tv, err := s.cache.GetTimeval(name)
 		if err != nil {
 			m.Error = err.Error()
 			return m
@@ -154,7 +173,7 @@ func readMetric(name string) *pb.Metric {
 		}}
 
 	case metrics.TypeLoadavg:
-		la, err := macosasmsysctl.GetLoadavg()
+		la, err := s.cache.GetLoadavg()
 		if err != nil {
 			m.Error = err.Error()
 			return m
@@ -169,7 +188,7 @@ func readMetric(name string) *pb.Metric {
 		}}
 
 	case metrics.TypeSwap:
-		su, err := macosasmsysctl.GetSwapUsage()
+		su, err := s.cache.GetSwapUsage()
 		if err != nil {
 			m.Error = err.Error()
 			return m
@@ -184,7 +203,7 @@ func readMetric(name string) *pb.Metric {
 		}}
 
 	case metrics.TypeClock:
-		ci, err := macosasmsysctl.GetClockinfo()
+		ci, err := s.cache.GetClockinfo()
 		if err != nil {
 			m.Error = err.Error()
 			return m
@@ -200,7 +219,7 @@ func readMetric(name string) *pb.Metric {
 		}}
 
 	case metrics.TypeRaw:
-		raw, err := macosasmsysctl.GetRaw(name)
+		raw, err := s.cache.GetRaw(name)
 		if err != nil {
 			m.Error = err.Error()
 			return m
@@ -210,5 +229,216 @@ func readMetric(name string) *pb.Metric {
 	default:
 		m.Error = fmt.Sprintf("unsupported type %q", info.Type)
 	}
+	return m
+}
+
+// readComputed handles server-side computed aggregate metrics.
+func (s *SysctlServer) readComputed(name string, m *pb.Metric) *pb.Metric {
+	switch name {
+	case "computed.memory_utilization_pct":
+		return s.computeMemoryUtil(m)
+	case "computed.compression_ratio":
+		return s.computeCompressionRatio(m)
+	case "computed.swap_utilization_pct":
+		return s.computeSwapUtil(m)
+	case "computed.compressor_pressure_pct":
+		return s.computeCompressorPressure(m)
+	case "computed.total_connections":
+		return s.computeTotalConnections(m)
+	case "computed.uptime_seconds":
+		return s.computeUptime(m)
+	case "computed.vfs_reclamation_pct":
+		return s.computeVFSReclamation(m)
+	default:
+		m.Error = fmt.Sprintf("unknown computed metric %q", name)
+		return m
+	}
+}
+
+// computeMemoryUtil: (total_pages - free_pages) / total_pages * 100
+func (s *SysctlServer) computeMemoryUtil(m *pb.Metric) *pb.Metric {
+	total, err := s.cache.GetInt32("vm.pages")
+	if err != nil {
+		m.Error = fmt.Sprintf("vm.pages: %v", err)
+		return m
+	}
+	free, err := s.cache.GetInt32("vm.page_free_count")
+	if err != nil {
+		m.Error = fmt.Sprintf("vm.page_free_count: %v", err)
+		return m
+	}
+	if total == 0 {
+		m.Error = "vm.pages is 0"
+		return m
+	}
+	pct := float64(total-free) / float64(total) * 100
+	m.Value = &pb.Metric_StructValue{StructValue: &pb.StructValue{
+		TypeName: "computed",
+		Fields: map[string]string{
+			"value":       fmt.Sprintf("%.2f", pct),
+			"unit":        "percent",
+			"total_pages": fmt.Sprintf("%d", total),
+			"free_pages":  fmt.Sprintf("%d", free),
+		},
+	}}
+	return m
+}
+
+// computeCompressionRatio: input_bytes / compressed_bytes
+func (s *SysctlServer) computeCompressionRatio(m *pb.Metric) *pb.Metric {
+	input, err := s.cache.GetUint64("vm.compressor_input_bytes")
+	if err != nil {
+		m.Error = fmt.Sprintf("vm.compressor_input_bytes: %v", err)
+		return m
+	}
+	compressed, err := s.cache.GetUint64("vm.compressor_compressed_bytes")
+	if err != nil {
+		m.Error = fmt.Sprintf("vm.compressor_compressed_bytes: %v", err)
+		return m
+	}
+	ratio := 0.0
+	if compressed > 0 {
+		ratio = float64(input) / float64(compressed)
+	}
+	m.Value = &pb.Metric_StructValue{StructValue: &pb.StructValue{
+		TypeName: "computed",
+		Fields: map[string]string{
+			"value":            fmt.Sprintf("%.2f", ratio),
+			"unit":             "ratio",
+			"input_bytes":      fmt.Sprintf("%d", input),
+			"compressed_bytes": fmt.Sprintf("%d", compressed),
+		},
+	}}
+	return m
+}
+
+// computeSwapUtil: used / total * 100
+func (s *SysctlServer) computeSwapUtil(m *pb.Metric) *pb.Metric {
+	su, err := s.cache.GetSwapUsage()
+	if err != nil {
+		m.Error = fmt.Sprintf("vm.swapusage: %v", err)
+		return m
+	}
+	pct := 0.0
+	if su.Total > 0 {
+		pct = float64(su.Used) / float64(su.Total) * 100
+	}
+	m.Value = &pb.Metric_StructValue{StructValue: &pb.StructValue{
+		TypeName: "computed",
+		Fields: map[string]string{
+			"value":      fmt.Sprintf("%.2f", pct),
+			"unit":       "percent",
+			"swap_used":  fmt.Sprintf("%d", su.Used),
+			"swap_total": fmt.Sprintf("%d", su.Total),
+		},
+	}}
+	return m
+}
+
+// computeCompressorPressure: bytes_used / pool_size * 100
+func (s *SysctlServer) computeCompressorPressure(m *pb.Metric) *pb.Metric {
+	used, err := s.cache.GetUint64("vm.compressor_bytes_used")
+	if err != nil {
+		m.Error = fmt.Sprintf("vm.compressor_bytes_used: %v", err)
+		return m
+	}
+	pool, err := s.cache.GetUint64("vm.compressor_pool_size")
+	if err != nil {
+		m.Error = fmt.Sprintf("vm.compressor_pool_size: %v", err)
+		return m
+	}
+	pct := 0.0
+	if pool > 0 {
+		pct = float64(used) / float64(pool) * 100
+	}
+	m.Value = &pb.Metric_StructValue{StructValue: &pb.StructValue{
+		TypeName: "computed",
+		Fields: map[string]string{
+			"value":      fmt.Sprintf("%.2f", pct),
+			"unit":       "percent",
+			"bytes_used": fmt.Sprintf("%d", used),
+			"pool_size":  fmt.Sprintf("%d", pool),
+		},
+	}}
+	return m
+}
+
+// computeTotalConnections: tcp + udp + unix
+func (s *SysctlServer) computeTotalConnections(m *pb.Metric) *pb.Metric {
+	tcp, err := s.cache.GetInt32("net.inet.tcp.pcbcount")
+	if err != nil {
+		m.Error = fmt.Sprintf("net.inet.tcp.pcbcount: %v", err)
+		return m
+	}
+	udp, err := s.cache.GetInt32("net.inet.udp.pcbcount")
+	if err != nil {
+		m.Error = fmt.Sprintf("net.inet.udp.pcbcount: %v", err)
+		return m
+	}
+	unix, err := s.cache.GetInt32("net.local.pcbcount")
+	if err != nil {
+		m.Error = fmt.Sprintf("net.local.pcbcount: %v", err)
+		return m
+	}
+	total := int64(tcp) + int64(udp) + int64(unix)
+	m.Value = &pb.Metric_StructValue{StructValue: &pb.StructValue{
+		TypeName: "computed",
+		Fields: map[string]string{
+			"value": fmt.Sprintf("%d", total),
+			"unit":  "connections",
+			"tcp":   fmt.Sprintf("%d", tcp),
+			"udp":   fmt.Sprintf("%d", udp),
+			"unix":  fmt.Sprintf("%d", unix),
+		},
+	}}
+	return m
+}
+
+// computeUptime: now - boottime
+func (s *SysctlServer) computeUptime(m *pb.Metric) *pb.Metric {
+	tv, err := s.cache.GetTimeval("kern.boottime")
+	if err != nil {
+		m.Error = fmt.Sprintf("kern.boottime: %v", err)
+		return m
+	}
+	uptime := time.Since(tv.Time())
+	secs := int64(uptime.Seconds())
+	m.Value = &pb.Metric_StructValue{StructValue: &pb.StructValue{
+		TypeName: "computed",
+		Fields: map[string]string{
+			"value":    fmt.Sprintf("%d", secs),
+			"unit":     "seconds",
+			"human":    uptime.Truncate(time.Second).String(),
+			"boottime": tv.Time().Format("2006-01-02T15:04:05Z07:00"),
+		},
+	}}
+	return m
+}
+
+// computeVFSReclamation: recycled / total
+func (s *SysctlServer) computeVFSReclamation(m *pb.Metric) *pb.Metric {
+	total, err := s.cache.GetInt64("vfs.vnstats.num_vnodes")
+	if err != nil {
+		m.Error = fmt.Sprintf("vfs.vnstats.num_vnodes: %v", err)
+		return m
+	}
+	recycled, err := s.cache.GetInt64("vfs.vnstats.num_recycledvnodes")
+	if err != nil {
+		m.Error = fmt.Sprintf("vfs.vnstats.num_recycledvnodes: %v", err)
+		return m
+	}
+	pct := 0.0
+	if total > 0 {
+		pct = float64(recycled) / float64(total) * 100
+	}
+	m.Value = &pb.Metric_StructValue{StructValue: &pb.StructValue{
+		TypeName: "computed",
+		Fields: map[string]string{
+			"value":    fmt.Sprintf("%.2f", pct),
+			"unit":     "percent",
+			"recycled": fmt.Sprintf("%d", recycled),
+			"total":    fmt.Sprintf("%d", total),
+		},
+	}}
 	return m
 }

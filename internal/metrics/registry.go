@@ -12,11 +12,12 @@ const (
 	TypeUint64  ValueType = "uint64"
 	TypeInt32   ValueType = "int32"
 	TypeInt64   ValueType = "int64"
-	TypeRaw     ValueType = "raw"
-	TypeTimeval ValueType = "timeval" // 16 bytes: {Sec, Usec uint64}
-	TypeLoadavg ValueType = "loadavg" // 24 bytes: {Ldavg [3]uint32, pad uint32, Fscale int64}
-	TypeSwap    ValueType = "swap"    // 32 bytes: {Total, Avail, Used, Flags uint64}
-	TypeClock   ValueType = "clock"   // 20 bytes: {Hz, Tick, Tickadj, Profhz, Stathz int32}
+	TypeRaw      ValueType = "raw"
+	TypeTimeval  ValueType = "timeval"  // 16 bytes: {Sec, Usec uint64}
+	TypeLoadavg  ValueType = "loadavg"  // 24 bytes: {Ldavg [3]uint32, pad uint32, Fscale int64}
+	TypeSwap     ValueType = "swap"     // 32 bytes: {Total, Avail, Used, Flags uint64}
+	TypeClock    ValueType = "clock"    // 20 bytes: {Hz, Tick, Tickadj, Profhz, Stathz int32}
+	TypeComputed ValueType = "computed" // Server-side computed from multiple sysctls
 )
 
 // Category groups related metrics.
@@ -54,6 +55,7 @@ const (
 	CatKPC           Category = "kpc"
 	CatIOGPU         Category = "iogpu"
 	CatSecurity      Category = "security"
+	CatComputed      Category = "computed"
 )
 
 // Info describes a known sysctl metric.
@@ -165,9 +167,6 @@ var Known = []Info{
 	// =========================================================================
 	// kern.process — Process & Thread Counts
 	// =========================================================================
-	{Name: "kern.num_tasks", Description: "Current task (process) count", Type: TypeInt32, Category: CatKernProcess},
-	{Name: "kern.num_threads", Description: "Current thread count", Type: TypeInt32, Category: CatKernProcess},
-	{Name: "kern.num_taskthreads", Description: "Threads belonging to tasks", Type: TypeInt32, Category: CatKernProcess},
 	{Name: "kern.num_files", Description: "Open file descriptors", Type: TypeInt32, Category: CatKernProcess},
 	{Name: "kern.num_vnodes", Description: "Active vnodes", Type: TypeInt32, Category: CatKernProcess},
 	{Name: "kern.num_recycledvnodes", Description: "Recycled vnode count", Type: TypeInt64, Category: CatKernProcess},
@@ -218,6 +217,9 @@ var Known = []Info{
 	{Name: "kern.aiomax", Description: "Max AIO operations", Type: TypeInt32, Category: CatKernLimits},
 	{Name: "kern.aioprocmax", Description: "Max AIO per process", Type: TypeInt32, Category: CatKernLimits},
 	{Name: "kern.coredump", Description: "Core dumps enabled", Type: TypeInt32, Category: CatKernLimits},
+	{Name: "kern.num_tasks", Description: "Task limit (not live count, always 4096)", Type: TypeInt32, Category: CatKernLimits},
+	{Name: "kern.num_threads", Description: "Thread limit (not live count, always 20480)", Type: TypeInt32, Category: CatKernLimits},
+	{Name: "kern.num_taskthreads", Description: "Threads-per-task limit (not live count, always 4096)", Type: TypeInt32, Category: CatKernLimits},
 
 	// =========================================================================
 	// kern.ipc — IPC
@@ -285,16 +287,8 @@ var Known = []Info{
 	{Name: "vm.compressor_swapper_reclaim_swapins", Description: "Reclaim swap-ins", Type: TypeInt64, Category: CatVMCompressor},
 	{Name: "vm.compressor_swapper_defrag_swapins", Description: "Defrag swap-ins", Type: TypeInt64, Category: CatVMCompressor},
 	{Name: "vm.compressor_swapper_swapout_thrashing_detected", Description: "Swap thrashing events", Type: TypeInt64, Category: CatVMCompressor},
-	// WK (WKdm) compression
-	{Name: "vm.wk_compressions", Description: "WKdm compressions", Type: TypeInt64, Category: CatVMCompressor},
-	{Name: "vm.wk_compressed_bytes_total", Description: "WKdm total compressed bytes", Type: TypeInt64, Category: CatVMCompressor},
-	{Name: "vm.wk_decompressions", Description: "WKdm decompressions", Type: TypeInt64, Category: CatVMCompressor},
-	{Name: "vm.wk_decompressed_bytes", Description: "WKdm decompressed bytes", Type: TypeInt64, Category: CatVMCompressor},
-	// LZ4 compression
-	{Name: "vm.lz4_compressions", Description: "LZ4 compressions", Type: TypeInt64, Category: CatVMCompressor},
-	{Name: "vm.lz4_compressed_bytes", Description: "LZ4 compressed bytes", Type: TypeInt64, Category: CatVMCompressor},
-	{Name: "vm.lz4_decompressions", Description: "LZ4 decompressions", Type: TypeInt64, Category: CatVMCompressor},
-	{Name: "vm.lz4_compression_failures", Description: "LZ4 compression failures", Type: TypeInt64, Category: CatVMCompressor},
+	// NOTE: vm.wk_* (WKdm) and vm.lz4_* counters removed — always 0 on Apple Silicon M4.
+	// The kernel uses a different compressor on ARM64.
 
 	// =========================================================================
 	// vm.pageout — Pageout Activity
@@ -319,7 +313,6 @@ var Known = []Info{
 	{Name: "vm.swapusage", Description: "Swap usage stats", Type: TypeSwap, Category: CatVMSwap},
 	{Name: "vm.swap_enabled", Description: "Swap enabled", Type: TypeInt32, Category: CatVMSwap},
 	{Name: "vm.swapfileprefix", Description: "Swap file path prefix", Type: TypeString, Category: CatVMSwap},
-	{Name: "vm.loadavg", Description: "System load averages", Type: TypeLoadavg, Category: CatVMSwap},
 
 	// =========================================================================
 	// vm.wire — Wire Limits
@@ -340,6 +333,7 @@ var Known = []Info{
 	{Name: "vm.shared_region_count", Description: "Active shared regions", Type: TypeInt32, Category: CatVMMisc},
 	{Name: "vm.shared_region_peak", Description: "Peak shared regions", Type: TypeInt32, Category: CatVMMisc},
 	{Name: "vm.copied_on_read", Description: "Copy-on-read events", Type: TypeInt64, Category: CatVMMisc},
+	{Name: "vm.loadavg", Description: "System load averages", Type: TypeLoadavg, Category: CatVMMisc},
 
 	// =========================================================================
 	// machdep — Machine-Dependent
@@ -397,6 +391,8 @@ var Known = []Info{
 	// net.misc — Misc Network
 	// =========================================================================
 	{Name: "net.local.pcbcount", Description: "Unix domain socket count", Type: TypeInt32, Category: CatNetMisc},
+	{Name: "net.soflow.count", Description: "Socket flow count", Type: TypeInt64, Category: CatNetMisc},
+	{Name: "net.inet.mptcp.pcbcount", Description: "MPTCP connections", Type: TypeInt32, Category: CatNetMisc},
 
 	// =========================================================================
 	// vfs — Filesystem
@@ -404,6 +400,7 @@ var Known = []Info{
 	{Name: "vfs.vnstats.num_vnodes", Description: "Total vnodes", Type: TypeInt64, Category: CatVFS},
 	{Name: "vfs.vnstats.num_free_vnodes", Description: "Free vnodes", Type: TypeInt64, Category: CatVFS},
 	{Name: "vfs.vnstats.num_recycledvnodes", Description: "Recycled vnodes", Type: TypeInt64, Category: CatVFS},
+	{Name: "vfs.vnstats.num_dead_vnodes", Description: "Dead vnodes pending reclaim", Type: TypeInt64, Category: CatVFS},
 	{Name: "vfs.vnstats.num_newvnode_calls", Description: "New vnode allocations", Type: TypeInt64, Category: CatVFS},
 	{Name: "vfs.nummntops", Description: "Mount operations", Type: TypeInt32, Category: CatVFS},
 	{Name: "vfs.generic.apfs.allocated", Description: "APFS allocated bytes", Type: TypeInt64, Category: CatVFS},
@@ -427,6 +424,26 @@ var Known = []Info{
 	{Name: "iogpu.wired_limit_mb", Description: "GPU wired memory limit (MB)", Type: TypeInt32, Category: CatIOGPU},
 	{Name: "iogpu.wired_lwm_mb", Description: "GPU wired low water mark (MB)", Type: TypeInt32, Category: CatIOGPU},
 	{Name: "iogpu.dynamic_lwm", Description: "Dynamic low water mark", Type: TypeInt32, Category: CatIOGPU},
+
+	// =========================================================================
+	// security — Security / MAC Framework
+	// =========================================================================
+	{Name: "security.mac.vnode_label_count", Description: "Active vnode MAC labels", Type: TypeInt32, Category: CatSecurity},
+	{Name: "security.mac.asp.stats.exec_hook_count", Description: "ASP exec hook invocations", Type: TypeInt64, Category: CatSecurity},
+	{Name: "security.mac.asp.stats.library_hook_count", Description: "ASP library hook invocations", Type: TypeInt64, Category: CatSecurity},
+	{Name: "security.mac.asp.stats.exec_hook_work_time", Description: "ASP exec hook cumulative time", Type: TypeInt64, Category: CatSecurity},
+	{Name: "security.mac.asp.stats.library_hook_time", Description: "ASP library hook cumulative time", Type: TypeInt64, Category: CatSecurity},
+
+	// =========================================================================
+	// computed — Server-Side Aggregates
+	// =========================================================================
+	{Name: "computed.memory_utilization_pct", Description: "Memory utilization percentage", Type: TypeComputed, Category: CatComputed},
+	{Name: "computed.compression_ratio", Description: "Memory compression ratio (input/compressed)", Type: TypeComputed, Category: CatComputed},
+	{Name: "computed.swap_utilization_pct", Description: "Swap utilization percentage", Type: TypeComputed, Category: CatComputed},
+	{Name: "computed.compressor_pressure_pct", Description: "Compressor pool pressure percentage", Type: TypeComputed, Category: CatComputed},
+	{Name: "computed.total_connections", Description: "Total network connections (TCP+UDP+Unix)", Type: TypeComputed, Category: CatComputed},
+	{Name: "computed.uptime_seconds", Description: "System uptime in seconds", Type: TypeComputed, Category: CatComputed},
+	{Name: "computed.vfs_reclamation_pct", Description: "VFS vnode reclamation percentage", Type: TypeComputed, Category: CatComputed},
 }
 
 // knownByName is a lookup index built lazily.
