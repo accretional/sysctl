@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package sysctl;
+
+option go_package = "github.com/accretional/sysctl/proto/sysctlpb";
+
+// SysctlService provides access to macOS kernel metrics via sysctl.
+service SysctlService {
+  // GetMetric returns a single sysctl metric by name.
+  rpc GetMetric(GetMetricRequest) returns (GetMetricResponse);
+
+  // GetMetrics returns multiple sysctl metrics by name.
+  rpc GetMetrics(GetMetricsRequest) returns (GetMetricsResponse);
+
+  // ListKnownMetrics returns all known/supported metric names.
+  rpc ListKnownMetrics(ListKnownMetricsRequest) returns (ListKnownMetricsResponse);
+}
+
+message GetMetricRequest {
+  string name = 1; // e.g. "hw.memsize", "kern.hostname"
+}
+
+message GetMetricResponse {
+  Metric metric = 1;
+}
+
+message GetMetricsRequest {
+  repeated string names = 1;
+}
+
+message GetMetricsResponse {
+  repeated Metric metrics = 1;
+}
+
+message ListKnownMetricsRequest {}
+
+message ListKnownMetricsResponse {
+  repeated MetricInfo metrics = 1;
+}
+
+// Metric is a sysctl value with type information.
+message Metric {
+  string name = 1;
+  oneof value {
+    string string_value = 2;
+    uint64 uint64_value = 3;
+    int64 int64_value = 4;
+    uint32 uint32_value = 5;
+    int32 int32_value = 6;
+    bytes raw_value = 7;
+  }
+  string error = 8; // non-empty if the metric could not be read
+}
+
+// MetricInfo describes a known sysctl metric.
+message MetricInfo {
+  string name = 1;
+  string description = 2;
+  string value_type = 3; // "string", "uint64", "int32", etc.
+}
