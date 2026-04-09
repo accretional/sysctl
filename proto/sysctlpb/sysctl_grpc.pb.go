@@ -19,9 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SysctlService_GetMetric_FullMethodName        = "/sysctl.SysctlService/GetMetric"
-	SysctlService_GetMetrics_FullMethodName       = "/sysctl.SysctlService/GetMetrics"
-	SysctlService_ListKnownMetrics_FullMethodName = "/sysctl.SysctlService/ListKnownMetrics"
+	SysctlService_GetMetric_FullMethodName            = "/sysctl.SysctlService/GetMetric"
+	SysctlService_GetMetrics_FullMethodName           = "/sysctl.SysctlService/GetMetrics"
+	SysctlService_GetMetricsByCategory_FullMethodName = "/sysctl.SysctlService/GetMetricsByCategory"
+	SysctlService_ListKnownMetrics_FullMethodName     = "/sysctl.SysctlService/ListKnownMetrics"
+	SysctlService_ListCategories_FullMethodName       = "/sysctl.SysctlService/ListCategories"
 )
 
 // SysctlServiceClient is the client API for SysctlService service.
@@ -34,8 +36,12 @@ type SysctlServiceClient interface {
 	GetMetric(ctx context.Context, in *GetMetricRequest, opts ...grpc.CallOption) (*GetMetricResponse, error)
 	// GetMetrics returns multiple sysctl metrics by name.
 	GetMetrics(ctx context.Context, in *GetMetricsRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error)
+	// GetMetricsByCategory returns all metrics in a category.
+	GetMetricsByCategory(ctx context.Context, in *GetMetricsByCategoryRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error)
 	// ListKnownMetrics returns all known/supported metric names.
 	ListKnownMetrics(ctx context.Context, in *ListKnownMetricsRequest, opts ...grpc.CallOption) (*ListKnownMetricsResponse, error)
+	// ListCategories returns all metric categories.
+	ListCategories(ctx context.Context, in *ListCategoriesRequest, opts ...grpc.CallOption) (*ListCategoriesResponse, error)
 }
 
 type sysctlServiceClient struct {
@@ -66,10 +72,30 @@ func (c *sysctlServiceClient) GetMetrics(ctx context.Context, in *GetMetricsRequ
 	return out, nil
 }
 
+func (c *sysctlServiceClient) GetMetricsByCategory(ctx context.Context, in *GetMetricsByCategoryRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetMetricsResponse)
+	err := c.cc.Invoke(ctx, SysctlService_GetMetricsByCategory_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *sysctlServiceClient) ListKnownMetrics(ctx context.Context, in *ListKnownMetricsRequest, opts ...grpc.CallOption) (*ListKnownMetricsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListKnownMetricsResponse)
 	err := c.cc.Invoke(ctx, SysctlService_ListKnownMetrics_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *sysctlServiceClient) ListCategories(ctx context.Context, in *ListCategoriesRequest, opts ...grpc.CallOption) (*ListCategoriesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListCategoriesResponse)
+	err := c.cc.Invoke(ctx, SysctlService_ListCategories_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -86,8 +112,12 @@ type SysctlServiceServer interface {
 	GetMetric(context.Context, *GetMetricRequest) (*GetMetricResponse, error)
 	// GetMetrics returns multiple sysctl metrics by name.
 	GetMetrics(context.Context, *GetMetricsRequest) (*GetMetricsResponse, error)
+	// GetMetricsByCategory returns all metrics in a category.
+	GetMetricsByCategory(context.Context, *GetMetricsByCategoryRequest) (*GetMetricsResponse, error)
 	// ListKnownMetrics returns all known/supported metric names.
 	ListKnownMetrics(context.Context, *ListKnownMetricsRequest) (*ListKnownMetricsResponse, error)
+	// ListCategories returns all metric categories.
+	ListCategories(context.Context, *ListCategoriesRequest) (*ListCategoriesResponse, error)
 	mustEmbedUnimplementedSysctlServiceServer()
 }
 
@@ -104,8 +134,14 @@ func (UnimplementedSysctlServiceServer) GetMetric(context.Context, *GetMetricReq
 func (UnimplementedSysctlServiceServer) GetMetrics(context.Context, *GetMetricsRequest) (*GetMetricsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMetrics not implemented")
 }
+func (UnimplementedSysctlServiceServer) GetMetricsByCategory(context.Context, *GetMetricsByCategoryRequest) (*GetMetricsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetMetricsByCategory not implemented")
+}
 func (UnimplementedSysctlServiceServer) ListKnownMetrics(context.Context, *ListKnownMetricsRequest) (*ListKnownMetricsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListKnownMetrics not implemented")
+}
+func (UnimplementedSysctlServiceServer) ListCategories(context.Context, *ListCategoriesRequest) (*ListCategoriesResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListCategories not implemented")
 }
 func (UnimplementedSysctlServiceServer) mustEmbedUnimplementedSysctlServiceServer() {}
 func (UnimplementedSysctlServiceServer) testEmbeddedByValue()                       {}
@@ -164,6 +200,24 @@ func _SysctlService_GetMetrics_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SysctlService_GetMetricsByCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetMetricsByCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SysctlServiceServer).GetMetricsByCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SysctlService_GetMetricsByCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SysctlServiceServer).GetMetricsByCategory(ctx, req.(*GetMetricsByCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _SysctlService_ListKnownMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListKnownMetricsRequest)
 	if err := dec(in); err != nil {
@@ -178,6 +232,24 @@ func _SysctlService_ListKnownMetrics_Handler(srv interface{}, ctx context.Contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(SysctlServiceServer).ListKnownMetrics(ctx, req.(*ListKnownMetricsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _SysctlService_ListCategories_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListCategoriesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SysctlServiceServer).ListCategories(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SysctlService_ListCategories_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SysctlServiceServer).ListCategories(ctx, req.(*ListCategoriesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -198,8 +270,16 @@ var SysctlService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SysctlService_GetMetrics_Handler,
 		},
 		{
+			MethodName: "GetMetricsByCategory",
+			Handler:    _SysctlService_GetMetricsByCategory_Handler,
+		},
+		{
 			MethodName: "ListKnownMetrics",
 			Handler:    _SysctlService_ListKnownMetrics_Handler,
+		},
+		{
+			MethodName: "ListCategories",
+			Handler:    _SysctlService_ListCategories_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

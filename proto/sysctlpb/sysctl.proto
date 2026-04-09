@@ -12,8 +12,14 @@ service SysctlService {
   // GetMetrics returns multiple sysctl metrics by name.
   rpc GetMetrics(GetMetricsRequest) returns (GetMetricsResponse);
 
+  // GetMetricsByCategory returns all metrics in a category.
+  rpc GetMetricsByCategory(GetMetricsByCategoryRequest) returns (GetMetricsResponse);
+
   // ListKnownMetrics returns all known/supported metric names.
   rpc ListKnownMetrics(ListKnownMetricsRequest) returns (ListKnownMetricsResponse);
+
+  // ListCategories returns all metric categories.
+  rpc ListCategories(ListCategoriesRequest) returns (ListCategoriesResponse);
 }
 
 message GetMetricRequest {
@@ -32,15 +38,33 @@ message GetMetricsResponse {
   repeated Metric metrics = 1;
 }
 
-message ListKnownMetricsRequest {}
+message GetMetricsByCategoryRequest {
+  string category = 1; // e.g. "vm.compressor", "hw.cpu"
+}
+
+message ListKnownMetricsRequest {
+  string category = 1; // optional: filter by category
+}
 
 message ListKnownMetricsResponse {
   repeated MetricInfo metrics = 1;
 }
 
+message ListCategoriesRequest {}
+
+message ListCategoriesResponse {
+  repeated CategoryInfo categories = 1;
+}
+
+message CategoryInfo {
+  string name = 1;
+  int32 metric_count = 2;
+}
+
 // Metric is a sysctl value with type information.
 message Metric {
   string name = 1;
+  string category = 9;
   oneof value {
     string string_value = 2;
     uint64 uint64_value = 3;
@@ -48,13 +72,21 @@ message Metric {
     uint32 uint32_value = 5;
     int32 int32_value = 6;
     bytes raw_value = 7;
+    StructValue struct_value = 10;
   }
   string error = 8; // non-empty if the metric could not be read
+}
+
+// StructValue holds parsed structured sysctl values.
+message StructValue {
+  string type_name = 1; // "timeval", "loadavg", "swap", "clock"
+  map<string, string> fields = 2; // human-readable field name -> string value
 }
 
 // MetricInfo describes a known sysctl metric.
 message MetricInfo {
   string name = 1;
   string description = 2;
-  string value_type = 3; // "string", "uint64", "int32", etc.
+  string value_type = 3; // "string", "uint64", "int32", "timeval", "loadavg", etc.
+  string category = 4;
 }
