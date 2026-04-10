@@ -53,8 +53,10 @@ func (c *MIBCache) Warm(names []string) int {
 	return resolved
 }
 
-// getRawMIB reads a sysctl value using a pre-resolved MIB array.
-func getRawMIB(mib []uint32) ([]byte, error) {
+// GetRawMIB reads a sysctl value using a pre-resolved MIB array.
+// This is exported for tools that need to read using manually-specified MIBs
+// (e.g., testing legacy XNU header constants against runtime-resolved OIDs).
+func GetRawMIB(mib []uint32) ([]byte, error) {
 	// First call: determine size.
 	var n uintptr
 	if err := rawSysctl(mib, nil, &n, nil, 0); err != nil {
@@ -78,7 +80,7 @@ func (c *MIBCache) GetRaw(name string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return getRawMIB(mib)
+	return GetRawMIB(mib)
 }
 
 // GetString reads a string value using the MIB cache.

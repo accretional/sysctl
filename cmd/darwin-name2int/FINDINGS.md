@@ -48,11 +48,63 @@ header.
 21 metrics match their XNU header constants exactly. One known divergence:
 
 **`hw.pagesize`**: XNU header defines `HW_PAGESIZE = 7`, but `sysctlbyname`
-resolves to `{6, 115}` on modern macOS ARM64. The kernel registers `hw.pagesize`
-as a new-style OID rather than using the legacy constant. The value reads
-correctly (16384 on Apple Silicon).
+resolves to `{6, 115}` on modern macOS ARM64.
 
-### 5. Network MIB hierarchy follows protocol families
+**Root cause: ARM64 type widening.** The legacy MIB `{6,7}` (HW_PAGESIZE)
+returns a 4-byte int32. Apple re-registered `hw.pagesize` as a new-style OID
+`{6,115}` that returns an 8-byte int64 on ARM64. Both return the same value
+(16384) — the legacy path still works, but `sysctlbyname("hw.pagesize")`
+resolves to the new 64-bit OID. This is the same type widening noted in
+CLAUDE.md for cache sizes and page sizes on ARM64.
+
+The legacy MIB `{6,7}` is NOT broken — it's just narrower. This divergence
+only affects code that resolves names to MIBs at runtime (what we do); code
+that hardcodes MIB `{6,7}` would still work but get 4 bytes instead of 8.
+
+### 5. Metrics larger than uint64 (8 bytes)
+
+16 of 243 metrics return more than 8 bytes from the kernel:
+
+| Type | Size | Count | Metrics |
+|------|------|-------|---------|
+| string | 6-104 bytes | 8 | kern.ostype (7B), kern.version (104B), kern.hostname (21B), kern.uuid (37B), kern.bootuuid (37B), machdep.cpu.brand_string (9B), vm.swapfileprefix (28B), hw.perflevel{0,1}.name (11-12B) |
+| raw | 80 bytes | 2 | hw.cacheconfig, hw.cachesize (10×uint64 arrays) |
+| timeval | 16 bytes | 3 | kern.boottime, kern.sleeptime, kern.waketime |
+| loadavg | 24 bytes | 1 | vm.loadavg |
+| swap | 32 bytes | 1 | vm.swapusage |
+| clock | 20 bytes | 1 | kern.clockrate |
+
+**All 16 are STATIC recommended** — they appear in the initial Subscribe
+snapshot but never in subsequent deltas. This confirms the DELTA_DESIGN.md
+audit: every delta after the first snapshot contains only fixed-size integer
+values (≤8 bytes), making CompactDelta with `fixed64 value` viable.
+
+For the eventual CompactDelta encoding:
+- The 2 raw metrics (cacheconfig, cachesize) are 80-byte arrays — too large
+  for a single fixed64. These are STATIC and never appear in deltas.
+- Struct types (timeval, loadavg, swap, clock) are fixed-size but >8 bytes.
+  Also STATIC. If needed, they could be decomposed into multiple CompactDelta
+  entries per struct field.
+
+### 6. hw.* OID namespace: legacy vs new-style
+
+Only 4 of 60 hw.* metrics still use legacy OIDs (MIB[1] ≤ 27 from XNU headers):
+
+| Metric | MIB | Bytes | Notes |
+|--------|-----|-------|-------|
+| hw.ncpu | {6,3} | 4 | HW_NCPU=3 |
+| hw.byteorder | {6,4} | 4 | HW_BYTEORDER=4 |
+| hw.memsize | {6,24} | 8 | HW_MEMSIZE=24 (always 64-bit) |
+| hw.activecpu | {6,25} | 4 | HW_AVAILCPU=25 |
+
+The other 56 hw.* metrics use new-style OIDs (MIB[1] ≥ 100). These include:
+- `hw.physicalcpu` through `hw.cpusubfamily` (OIDs 104-112) — 4 bytes each
+- `hw.pagesize`, `hw.cachelinesize`, cache sizes (OIDs 113-128) — **8 bytes**,
+  widened from the legacy 4-byte versions
+- `hw.perflevel{0,1}.*` (OID subtrees at 100-101) — Apple Silicon P/E core info
+- `hw.optional.arm.*` (OID subtree at 102) — ARM feature flags
+
+### 7. Network MIB hierarchy
 
 Network metrics follow `CTL_NET / PF_* / IPPROTO_* / sub-ID`:
 
@@ -64,7 +116,7 @@ net.local.pcbcount    → {4, 1, 102}       = CTL_NET / PF_LOCAL / 102
 net.inet.mptcp.*      → {4, 2, 256, ...}  = CTL_NET / PF_INET / IPPROTO_MPTCP / ...
 ```
 
-### 6. Flattenability to uint64: 239/243 succeed
+### 8. Flattenability to uint64: 239/243 succeed
 
 Using 16-bits-per-level encoding (max 4 levels), 239 of 243 metrics flatten to
 unique uint64 values with zero collisions. The 4 unflattenable metrics are
@@ -82,7 +134,7 @@ unique uint64 values with zero collisions. The 4 unflattenable metrics are
 Total bits needed: 7+9+9+8+7 = 40 bits. All MIB arrays fit in a uint64 with
 room to spare. A 40-bit packed encoding would cover all 243 metrics.
 
-### 7. Volatile metrics: only 4 change between consecutive reads
+### 9. Volatile metrics: only 4 change between consecutive reads
 
 | Metric | Size | Notes |
 |--------|------|-------|
@@ -134,6 +186,9 @@ OS release, not assumed stable across versions.
 ## Files
 
 - `main.go` — CLI tool for MIB resolution and analysis
-- `name2int_test.go` — Comprehensive validation tests
-- `mib_mappings.json` — Full MIB mappings for all 243 metrics (generated)
+- `name2int_test.go` — Core validation tests (resolve, uniqueness, consistency, XNU constants, flattenability, volatility)
+- `legacy_test.go` — Legacy vs resolved MIB comparison for all XNU header constants
+- `bigmetrics_test.go` — Metrics larger than uint64, hw.pagesize divergence investigation
+- `widening_test.go` — ARM64 type widening analysis across hw.* namespace
+- `mib_mappings.json` — Full MIB mappings for all 243 metrics (generated, gitignored)
 - `FINDINGS.md` — This document
