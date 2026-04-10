@@ -20,7 +20,7 @@ func startTestServer(t *testing.T) pb.SysctlServiceClient {
 	t.Helper()
 	lis := bufconn.Listen(bufSize)
 	s := grpc.NewServer()
-	pb.RegisterSysctlServiceServer(s, New("24.6.0"))
+	pb.RegisterSysctlServiceServer(s, New("24.6.0", 0))
 
 	go func() {
 		if err := s.Serve(lis); err != nil {

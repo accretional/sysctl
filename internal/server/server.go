@@ -19,11 +19,14 @@ type SysctlServer struct {
 	cache          *macosasmsysctl.MIBCache
 	kernelRegistry *pb.KernelMetricRegistry // raw from textproto
 	fullRegistry   *pb.KernelMetricRegistry // merged with MetricInfo fields
+	poller         *poller
 }
 
-// New returns a new SysctlServer with a warmed MIB cache.
+// New returns a new SysctlServer with a warmed MIB cache and poller.
 // If osVersion is non-empty, the matching kernel registry is loaded.
-func New(osVersion string) *SysctlServer {
+// pollInterval controls the poller tick frequency (0 disables polling;
+// all reads become live/DYNAMIC).
+func New(osVersion string, pollInterval time.Duration) *SysctlServer {
 	s := &SysctlServer{
 		cache: macosasmsysctl.NewMIBCache(),
 	}
@@ -48,7 +51,20 @@ func New(osVersion string) *SysctlServer {
 	}
 	s.cache.Warm(names)
 
+	// Start poller if interval is set.
+	if pollInterval > 0 {
+		s.poller = newPoller(s, pollInterval)
+		s.poller.start()
+	}
+
 	return s
+}
+
+// Stop shuts down the poller. Call this on server shutdown.
+func (s *SysctlServer) Stop() {
+	if s.poller != nil {
+		s.poller.stop()
+	}
 }
 
 // buildFullRegistry merges the Known metric registry (descriptions, types, categories)
@@ -154,7 +170,19 @@ func (s *SysctlServer) GetKernelRegistry(_ context.Context, _ *pb.GetKernelRegis
 	return &pb.GetKernelRegistryResponse{Registry: s.fullRegistry}, nil
 }
 
+// readMetric returns a metric value, checking the poller store for
+// STATIC/POLLED metrics before falling through to a live read.
 func (s *SysctlServer) readMetric(name string) *pb.Metric {
+	if s.poller != nil {
+		if m, ok := s.poller.store.get(name); ok {
+			return m
+		}
+	}
+	return s.readMetricLive(name)
+}
+
+// readMetricLive always does a fresh read from the kernel via MIB cache.
+func (s *SysctlServer) readMetricLive(name string) *pb.Metric {
 	info := metrics.ByName(name)
 
 	m := &pb.Metric{Name: name}

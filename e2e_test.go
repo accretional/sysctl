@@ -23,7 +23,7 @@ func TestE2E_FullFlow(t *testing.T) {
 	// Start server on bufconn.
 	lis := bufconn.Listen(bufSize)
 	s := grpc.NewServer()
-	pb.RegisterSysctlServiceServer(s, server.New("24.6.0"))
+	pb.RegisterSysctlServiceServer(s, server.New("24.6.0", 0))
 	go func() { s.Serve(lis) }()
 	t.Cleanup(func() { s.Stop() })
 

@@ -60,29 +60,26 @@ DYNAMIC > POLLED > CACHED > STATIC > DISABLED
 
 A downstream layer's effective pattern must be ≤ its upstream's pattern. Within the same pattern, TTL must be ≥ upstream's TTL.
 
-### Current behavior
+### Current behavior (implemented)
 
-Today, the service does a direct pass-through: `ListKnownMetrics` returns the kernel registry's `recommended_access_pattern` unchanged. All reads are actually `DYNAMIC` (live on every request via MIB cache). The access patterns are metadata only — they tell clients what's *recommended*, not what's *enforced*.
+The service implements per-host background polling:
+
+1. **STATIC metrics** are read once at startup and frozen in the poller store.
+2. **POLLED metrics** are refreshed by a single background goroutine on a configurable tick interval (`--poll-interval`, default 500ms). Each POLLED metric tracks its TTL from the registry and a `nextGatherNs` timestamp. On each tick, the poller iterates all POLLED metrics and re-reads those whose `nextGatherNs ≤ now`.
+3. **DYNAMIC metrics** (not STATIC or POLLED) fall through to a live MIB-cached read on every request.
+
+`GetMetric` / `GetMetrics` check the poller store first. If a metric is in the store (STATIC or POLLED), it's served from cache. Otherwise, `readMetricLive()` does a fresh kernel read.
+
+`ListKnownMetrics` returns the kernel registry's `recommended_access_pattern` unchanged — the patterns describe what the service actually does.
 
 ### Future: tiered access enforcement
 
-When the service implements background polling, the chain becomes real:
-
-1. **Service reads kernel at `kernel_access_pattern` rate** (or the recommended rate)
-   - STATIC metrics: read once at startup, frozen
-   - POLLED@10s: background goroutine refreshes every 10s
-   - DYNAMIC: read live per request
-
-2. **Service exposes `recommended_access_pattern` to clients**
-   - Clients that poll the service should respect these patterns
-   - A client polling a POLLED@10s metric every 1s gets the same 10s-stale data
-
-3. **Service-level overrides (future)**
-   - Operator config can override the kernel registry's recommendations
-   - Overrides must respect the monotonic invariant (can only decrease, never increase)
+1. **Service-level overrides**
+   - `--config` flag loads a config textproto with per-metric overrides
+   - Overrides clamped to monotonic invariant against kernel registry
    - Attempting to set DYNAMIC on a STATIC metric is a config error
 
-4. **Client-level masks (future)**
+2. **Client-level masks**
    - Clients request a "mask" — their desired access patterns
    - Service clamps each metric to `min(service_pattern, client_request)`
    - This lets a lightweight dashboard client say "I only need CACHED@60s for everything"
@@ -116,19 +113,17 @@ The textproto is embedded via `//go:embed` and loaded at server startup. It cont
 - Kernel patterns: 85 STATIC (hardware immutables), 165 DYNAMIC (everything that can change)
 - Recommended patterns: 80 STATIC (read once), 170 POLLED (10-60s TTLs)
 - `ValidateRegistry()` ensures 1:1 match between textproto and Known registry
-- All access patterns are metadata only — actual reads are all DYNAMIC (live via MIB cache)
+- **Per-host polling loop**: single goroutine with configurable tick interval
+  - STATIC metrics read once at startup, frozen in poller store
+  - POLLED metrics refreshed per TTL via `nextGatherNs` tracking
+  - Non-polled metrics fall through to live MIB-cached reads
+  - `--poll-interval` flag (default 500ms), pass 0 to disable polling
+  - Mutex-locked `metricStore` for concurrent read/write safety
 
 ## Next Steps
 
-### Phase 5: Background Polling Loop
-Implement the access patterns as real behavior:
-- STATIC: read once at startup into frozen cache
-- POLLED: background goroutines refresh at TTL interval
-- CACHED: lazy read with expiry timestamp
-- DYNAMIC: pass through to live MIB-cached read (current behavior)
-
 ### Phase 6: Service-Level Overrides
-- `--config` flag loads a `ServiceConfig` textproto with per-metric overrides
+- `--config` flag loads a config textproto with per-metric overrides
 - Overrides clamped to monotonic invariant against kernel registry
 - Warnings if config tries to increase frequency beyond kernel pattern
 
