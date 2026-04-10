@@ -43,32 +43,32 @@ func TestPoller_ServesFromCache(t *testing.T) {
 	time.Sleep(200 * time.Millisecond)
 
 	// STATIC metric should be in cache.
-	resp, err := client.GetMetric(ctx, &pb.GetMetricRequest{Name: "hw.memsize"})
+	resp, err := client.GetMetrics(ctx, &pb.GetMetricsRequest{Names: []string{"hw.memsize"}})
 	if err != nil {
-		t.Fatalf("GetMetric(hw.memsize): %v", err)
+		t.Fatalf("GetMetrics(hw.memsize): %v", err)
 	}
-	if resp.Metric.Error != "" {
-		t.Fatalf("hw.memsize error: %s", resp.Metric.Error)
+	if resp.Metrics[0].Error != "" {
+		t.Fatalf("hw.memsize error: %s", resp.Metrics[0].Error)
 	}
-	uv, ok := resp.Metric.Value.(*pb.Metric_Uint64Value)
+	uv, ok := resp.Metrics[0].Value.(*pb.Metric_Uint64Value)
 	if !ok {
-		t.Fatalf("expected uint64, got %T", resp.Metric.Value)
+		t.Fatalf("expected uint64, got %T", resp.Metrics[0].Value)
 	}
 	if uv.Uint64Value < 1<<30 {
 		t.Errorf("hw.memsize = %d, want >= 1 GB", uv.Uint64Value)
 	}
 
 	// POLLED metric should be in cache.
-	resp, err = client.GetMetric(ctx, &pb.GetMetricRequest{Name: "vm.page_free_count"})
+	resp, err = client.GetMetrics(ctx, &pb.GetMetricsRequest{Names: []string{"vm.page_free_count"}})
 	if err != nil {
-		t.Fatalf("GetMetric(vm.page_free_count): %v", err)
+		t.Fatalf("GetMetrics(vm.page_free_count): %v", err)
 	}
-	if resp.Metric.Error != "" {
-		t.Fatalf("vm.page_free_count error: %s", resp.Metric.Error)
+	if resp.Metrics[0].Error != "" {
+		t.Fatalf("vm.page_free_count error: %s", resp.Metrics[0].Error)
 	}
-	_, ok = resp.Metric.Value.(*pb.Metric_Int32Value)
+	_, ok = resp.Metrics[0].Value.(*pb.Metric_Int32Value)
 	if !ok {
-		t.Fatalf("expected int32, got %T", resp.Metric.Value)
+		t.Fatalf("expected int32, got %T", resp.Metrics[0].Value)
 	}
 }
 

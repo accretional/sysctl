@@ -6,6 +6,7 @@ import (
 	"context"
 	"net"
 	"testing"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -43,13 +44,13 @@ func startTestServer(t *testing.T) pb.SysctlServiceClient {
 	return pb.NewSysctlServiceClient(conn)
 }
 
-func TestGetMetric_KernOstype(t *testing.T) {
+func TestGetMetrics_KernOstype(t *testing.T) {
 	client := startTestServer(t)
-	resp, err := client.GetMetric(context.Background(), &pb.GetMetricRequest{Name: "kern.ostype"})
+	resp, err := client.GetMetrics(context.Background(), &pb.GetMetricsRequest{Names: []string{"kern.ostype"}})
 	if err != nil {
-		t.Fatalf("GetMetric: %v", err)
+		t.Fatalf("GetMetrics: %v", err)
 	}
-	m := resp.Metric
+	m := resp.Metrics[0]
 	if m.Error != "" {
 		t.Fatalf("metric error: %s", m.Error)
 	}
@@ -62,13 +63,13 @@ func TestGetMetric_KernOstype(t *testing.T) {
 	}
 }
 
-func TestGetMetric_HwMemsize(t *testing.T) {
+func TestGetMetrics_HwMemsize(t *testing.T) {
 	client := startTestServer(t)
-	resp, err := client.GetMetric(context.Background(), &pb.GetMetricRequest{Name: "hw.memsize"})
+	resp, err := client.GetMetrics(context.Background(), &pb.GetMetricsRequest{Names: []string{"hw.memsize"}})
 	if err != nil {
-		t.Fatalf("GetMetric: %v", err)
+		t.Fatalf("GetMetrics: %v", err)
 	}
-	m := resp.Metric
+	m := resp.Metrics[0]
 	if m.Error != "" {
 		t.Fatalf("metric error: %s", m.Error)
 	}
@@ -98,13 +99,13 @@ func TestGetMetrics_Multiple(t *testing.T) {
 	}
 }
 
-func TestGetMetric_InvalidName(t *testing.T) {
+func TestGetMetrics_InvalidName(t *testing.T) {
 	client := startTestServer(t)
-	resp, err := client.GetMetric(context.Background(), &pb.GetMetricRequest{Name: "bogus.nonexistent"})
+	resp, err := client.GetMetrics(context.Background(), &pb.GetMetricsRequest{Names: []string{"bogus.nonexistent"}})
 	if err != nil {
-		t.Fatalf("GetMetric RPC error: %v", err)
+		t.Fatalf("GetMetrics RPC error: %v", err)
 	}
-	if resp.Metric.Error == "" {
+	if resp.Metrics[0].Error == "" {
 		t.Error("expected error for bogus metric name")
 	}
 }
@@ -149,6 +150,162 @@ func TestListKnownMetrics_CategoryFilter(t *testing.T) {
 		}
 	}
 	t.Logf("hw.cpu has %d metrics", len(reg.Metrics))
+}
+
+func TestSubscribe(t *testing.T) {
+	client := startTestServer(t)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	stream, err := client.Subscribe(ctx, &pb.SubscribeRequest{
+		Names:      []string{"kern.ostype", "hw.memsize"},
+		IntervalNs: int64(100 * time.Millisecond),
+	})
+	if err != nil {
+		t.Fatalf("Subscribe: %v", err)
+	}
+
+	// First response: full snapshot with timestamp + errors.
+	resp, err := stream.Recv()
+	if err != nil {
+		t.Fatalf("Recv 0: %v", err)
+	}
+	if resp.TimestampNs == 0 {
+		t.Error("first response missing timestamp_ns")
+	}
+	if len(resp.Deltas) != 2 {
+		t.Fatalf("first response: got %d deltas, want 2", len(resp.Deltas))
+	}
+	for _, d := range resp.Deltas {
+		if len(d.Value) == 0 {
+			t.Errorf("delta %s has empty value", d.Name)
+		}
+		t.Logf("delta: %s = %d bytes", d.Name, len(d.Value))
+	}
+
+	// Second response should have a later timestamp.
+	resp2, err := stream.Recv()
+	if err != nil {
+		t.Fatalf("Recv 1: %v", err)
+	}
+	if resp2.TimestampNs <= resp.TimestampNs {
+		t.Errorf("timestamp did not advance: %d -> %d", resp.TimestampNs, resp2.TimestampNs)
+	}
+	t.Logf("second response: %d deltas, timestamp advanced by %dns",
+		len(resp2.Deltas), resp2.TimestampNs-resp.TimestampNs)
+	cancel()
+}
+
+func TestSubscribe_DeltaOnly(t *testing.T) {
+	client := startTestServer(t)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Subscribe to two STATIC metrics — after the first full snapshot, nothing changes.
+	stream, err := client.Subscribe(ctx, &pb.SubscribeRequest{
+		Names:      []string{"hw.memsize", "kern.ostype"},
+		IntervalNs: int64(100 * time.Millisecond),
+	})
+	if err != nil {
+		t.Fatalf("Subscribe: %v", err)
+	}
+
+	// First: full snapshot with both metrics.
+	resp, err := stream.Recv()
+	if err != nil {
+		t.Fatalf("Recv 0: %v", err)
+	}
+	if len(resp.Deltas) != 2 {
+		t.Fatalf("first: got %d deltas, want 2", len(resp.Deltas))
+	}
+
+	// Subsequent responses should have zero deltas (STATIC values don't change).
+	for i := 0; i < 3; i++ {
+		resp, err = stream.Recv()
+		if err != nil {
+			t.Fatalf("Recv %d: %v", i+1, err)
+		}
+		if len(resp.Deltas) > 0 {
+			for _, d := range resp.Deltas {
+				t.Errorf("unexpected delta for STATIC metric %s after first snapshot", d.Name)
+			}
+		}
+	}
+	t.Log("STATIC metrics correctly excluded from subsequent deltas")
+	cancel()
+}
+
+func TestSubscribe_Errors(t *testing.T) {
+	client := startTestServer(t)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Include a computed metric and an unknown metric — errors on first response only.
+	stream, err := client.Subscribe(ctx, &pb.SubscribeRequest{
+		Names:      []string{"hw.memsize", "computed.uptime_seconds", "bogus.nonexistent"},
+		IntervalNs: int64(100 * time.Millisecond),
+	})
+	if err != nil {
+		t.Fatalf("Subscribe: %v", err)
+	}
+
+	resp, err := stream.Recv()
+	if err != nil {
+		t.Fatalf("Recv: %v", err)
+	}
+	if len(resp.Errors) != 2 {
+		t.Fatalf("got %d errors, want 2 (computed + unknown)", len(resp.Errors))
+	}
+	for _, e := range resp.Errors {
+		t.Logf("error: %s", e)
+	}
+	// Only hw.memsize should be in deltas.
+	if len(resp.Deltas) != 1 || resp.Deltas[0].Name != "hw.memsize" {
+		t.Errorf("expected 1 delta for hw.memsize, got %d", len(resp.Deltas))
+	}
+
+	// Second response should have no errors.
+	resp2, err := stream.Recv()
+	if err != nil {
+		t.Fatalf("Recv 2: %v", err)
+	}
+	if len(resp2.Errors) != 0 {
+		t.Errorf("second response should have no errors, got %d", len(resp2.Errors))
+	}
+	cancel()
+}
+
+func TestSubscribe_RejectTooFast(t *testing.T) {
+	client := startTestServer(t)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Request 1ns interval — below server minimum, should be rejected.
+	stream, err := client.Subscribe(ctx, &pb.SubscribeRequest{
+		Names:      []string{"hw.memsize"},
+		IntervalNs: 1,
+	})
+	if err != nil {
+		t.Fatalf("Subscribe: %v", err)
+	}
+
+	_, err = stream.Recv()
+	if err == nil {
+		t.Fatal("expected error for too-fast interval, got nil")
+	}
+	t.Logf("correctly rejected: %v", err)
+}
+
+func TestGetKernelRegistry_MinInterval(t *testing.T) {
+	client := startTestServer(t)
+	resp, err := client.GetKernelRegistry(context.Background(), &pb.GetKernelRegistryRequest{})
+	if err != nil {
+		t.Fatalf("GetKernelRegistry: %v", err)
+	}
+	if resp.MinIntervalNs <= 0 {
+		t.Fatalf("min_interval_ns = %d, want > 0", resp.MinIntervalNs)
+	}
+	t.Logf("min_interval_ns = %d (%v)", resp.MinIntervalNs, time.Duration(resp.MinIntervalNs))
 }
 
 func TestGetKernelRegistry(t *testing.T) {

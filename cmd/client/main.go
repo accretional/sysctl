@@ -113,20 +113,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	if len(names) == 1 {
-		resp, err := client.GetMetric(ctx, &pb.GetMetricRequest{Name: names[0]})
-		if err != nil {
-			log.Fatalf("GetMetric: %v", err)
-		}
-		printMetric(resp.Metric)
-	} else {
-		resp, err := client.GetMetrics(ctx, &pb.GetMetricsRequest{Names: names})
-		if err != nil {
-			log.Fatalf("GetMetrics: %v", err)
-		}
-		for _, m := range resp.Metrics {
-			printMetric(m)
-		}
+	resp, err := client.GetMetrics(ctx, &pb.GetMetricsRequest{Names: names})
+	if err != nil {
+		log.Fatalf("GetMetrics: %v", err)
+	}
+	for _, m := range resp.Metrics {
+		printMetric(m)
 	}
 }
 

@@ -167,6 +167,12 @@ func classifyRecommended(name string, cat metrics.Category) (string, string) {
 		}
 	}
 
+	// Strings that are effectively immutable at runtime.
+	switch name {
+	case "kern.sched", "vm.swapfileprefix":
+		return "STATIC", ""
+	}
+
 	// Boot time, clockrate — set once
 	if name == "kern.boottime" || name == "kern.clockrate" {
 		return "STATIC", ""

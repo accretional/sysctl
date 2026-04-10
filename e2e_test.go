@@ -54,17 +54,17 @@ func TestE2E_FullFlow(t *testing.T) {
 	}
 	t.Logf("server reports %d known metrics (%s %s)", len(reg.Metrics), reg.OsRegistry, reg.OsVersion)
 
-	// 2. Fetch a single metric.
-	getResp, err := client.GetMetric(ctx, &pb.GetMetricRequest{Name: "kern.ostype"})
+	// 2. Fetch a single metric via GetMetrics.
+	getResp, err := client.GetMetrics(ctx, &pb.GetMetricsRequest{Names: []string{"kern.ostype"}})
 	if err != nil {
-		t.Fatalf("GetMetric(kern.ostype): %v", err)
+		t.Fatalf("GetMetrics(kern.ostype): %v", err)
 	}
-	if getResp.Metric.Error != "" {
-		t.Fatalf("kern.ostype error: %s", getResp.Metric.Error)
+	if getResp.Metrics[0].Error != "" {
+		t.Fatalf("kern.ostype error: %s", getResp.Metrics[0].Error)
 	}
-	sv, ok := getResp.Metric.Value.(*pb.Metric_StringValue)
+	sv, ok := getResp.Metrics[0].Value.(*pb.Metric_StringValue)
 	if !ok || sv.StringValue != "Darwin" {
-		t.Fatalf("kern.ostype = %v, want Darwin", getResp.Metric.Value)
+		t.Fatalf("kern.ostype = %v, want Darwin", getResp.Metrics[0].Value)
 	}
 	t.Log("kern.ostype = Darwin ✓")
 

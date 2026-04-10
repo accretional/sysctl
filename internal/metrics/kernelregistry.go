@@ -65,10 +65,10 @@ func ValidateRegistry(reg *pb.KernelMetricRegistry) []string {
 			issues = append(issues, fmt.Sprintf("metric %q: missing recommended_access_pattern", info.Name))
 		}
 
-		// Validate POLLED/CACHED have TTLs.
+		// Validate POLLED/CONSTRAINED have TTLs.
 		if km.RecommendedAccessPattern != nil {
 			p := km.RecommendedAccessPattern.Pattern
-			if (p == pb.AccessPattern_POLLED || p == pb.AccessPattern_CACHED) && km.RecommendedAccessPattern.Ttl == nil {
+			if (p == pb.AccessPattern_POLLED || p == pb.AccessPattern_CONSTRAINED) && km.RecommendedAccessPattern.Ttl == nil {
 				issues = append(issues, fmt.Sprintf("metric %q: %s recommended but no TTL set", info.Name, p))
 			}
 		}

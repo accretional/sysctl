@@ -423,7 +423,7 @@ metrics {
 metrics {
   name: "kern.sched"
   kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  recommended_access_pattern { pattern: STATIC }
 }
 metrics {
   name: "kern.sched_allow_NO_SMT_threads"
@@ -896,7 +896,7 @@ metrics {
 metrics {
   name: "vm.swapfileprefix"
   kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  recommended_access_pattern { pattern: STATIC }
 }
 
 # --- vm.wire ---

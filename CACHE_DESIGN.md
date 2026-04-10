@@ -8,18 +8,18 @@ Every metric has an access pattern controlling how it's read:
 |---|---|
 | `STATIC` | Read once at startup, served from cache forever |
 | `POLLED` | Background refresh at TTL interval, serve from cache |
-| `CACHED` | Read live, cache for TTL, re-read after expiry |
+| `CONSTRAINED` | Mutable via OS/sandbox/process configuration, poll at TTL |
 | `DYNAMIC` | Read live on every request (no caching) |
 | `DISABLED` | Never read, return error if requested |
 
 ## Proto Messages
 
 ```protobuf
-enum AccessPattern { STATIC, POLLED, CACHED, DYNAMIC, DISABLED }
+enum AccessPattern { STATIC, POLLED, CONSTRAINED, DYNAMIC, DISABLED }
 
 message AccessConfig {
   AccessPattern pattern = 1;
-  google.protobuf.Duration ttl = 2;  // Used by POLLED and CACHED
+  google.protobuf.Duration ttl = 2;  // Used by POLLED and CONSTRAINED
 }
 
 message KernelMetric {
@@ -47,15 +47,15 @@ The system models metric services as a chain where each layer can only *decrease
 
 ```
 kernel (source)  →  sysctl service  →  client  →  downstream client ...
-   DYNAMIC            POLLED@10s       CACHED@30s     CACHED@60s
+   DYNAMIC            POLLED@10s       CONSTRAINED@30s     CONSTRAINED@60s
 ```
 
-**The invariant:** if a layer upstream says a metric is `STATIC`, all downstream layers must treat it as `STATIC` or `DISABLED`. If upstream says `POLLED@10s`, downstream can serve `POLLED@30s`, `CACHED@60s`, or `STATIC` (snapshot) — but never `POLLED@5s` or `DYNAMIC` (which would claim more freshness than the source provides).
+**The invariant:** if a layer upstream says a metric is `STATIC`, all downstream layers must treat it as `STATIC` or `DISABLED`. If upstream says `POLLED@10s`, downstream can serve `POLLED@30s`, `CONSTRAINED@60s`, or `STATIC` (snapshot) — but never `POLLED@5s` or `DYNAMIC` (which would claim more freshness than the source provides).
 
 Access patterns are ordered by decreasing frequency:
 
 ```
-DYNAMIC > POLLED > CACHED > STATIC > DISABLED
+DYNAMIC > POLLED > CONSTRAINED > STATIC > DISABLED
 ```
 
 A downstream layer's effective pattern must be ≤ its upstream's pattern. Within the same pattern, TTL must be ≥ upstream's TTL.
@@ -82,7 +82,7 @@ The service implements per-host background polling:
 2. **Client-level masks**
    - Clients request a "mask" — their desired access patterns
    - Service clamps each metric to `min(service_pattern, client_request)`
-   - This lets a lightweight dashboard client say "I only need CACHED@60s for everything"
+   - This lets a lightweight dashboard client say "I only need CONSTRAINED@60s for everything"
 
 ### Why this matters
 

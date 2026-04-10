@@ -85,10 +85,10 @@ func TestKernelRegistryAccessPatterns(t *testing.T) {
 			counts[km.RecommendedAccessPattern.Pattern]++
 		}
 	}
-	t.Logf("recommended patterns: STATIC=%d POLLED=%d CACHED=%d DYNAMIC=%d DISABLED=%d",
+	t.Logf("recommended patterns: STATIC=%d POLLED=%d CONSTRAINED=%d DYNAMIC=%d DISABLED=%d",
 		counts[pb.AccessPattern_STATIC],
 		counts[pb.AccessPattern_POLLED],
-		counts[pb.AccessPattern_CACHED],
+		counts[pb.AccessPattern_CONSTRAINED],
 		counts[pb.AccessPattern_DYNAMIC],
 		counts[pb.AccessPattern_DISABLED])
 }

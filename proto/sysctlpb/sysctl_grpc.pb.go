@@ -19,9 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SysctlService_GetMetric_FullMethodName            = "/sysctl.SysctlService/GetMetric"
 	SysctlService_GetMetrics_FullMethodName           = "/sysctl.SysctlService/GetMetrics"
 	SysctlService_GetMetricsByCategory_FullMethodName = "/sysctl.SysctlService/GetMetricsByCategory"
+	SysctlService_Subscribe_FullMethodName            = "/sysctl.SysctlService/Subscribe"
 	SysctlService_ListKnownMetrics_FullMethodName     = "/sysctl.SysctlService/ListKnownMetrics"
 	SysctlService_ListCategories_FullMethodName       = "/sysctl.SysctlService/ListCategories"
 	SysctlService_GetKernelRegistry_FullMethodName    = "/sysctl.SysctlService/GetKernelRegistry"
@@ -33,12 +33,15 @@ const (
 //
 // SysctlService provides access to macOS kernel metrics via sysctl.
 type SysctlServiceClient interface {
-	// GetMetric returns a single sysctl metric by name.
-	GetMetric(ctx context.Context, in *GetMetricRequest, opts ...grpc.CallOption) (*GetMetricResponse, error)
 	// GetMetrics returns multiple sysctl metrics by name.
 	GetMetrics(ctx context.Context, in *GetMetricsRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error)
 	// GetMetricsByCategory returns all metrics in a category.
 	GetMetricsByCategory(ctx context.Context, in *GetMetricsByCategoryRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error)
+	// Subscribe streams metric deltas at a client-requested interval.
+	// Only metrics whose raw value changed since the last push are included.
+	// The server rejects intervals faster than min_interval_ns from the registry.
+	// Computed metrics are not supported — use GetMetrics for those.
+	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SubscribeResponse], error)
 	// ListKnownMetrics returns all known/supported metric names.
 	ListKnownMetrics(ctx context.Context, in *ListKnownMetricsRequest, opts ...grpc.CallOption) (*ListKnownMetricsResponse, error)
 	// ListCategories returns all metric categories.
@@ -53,16 +56,6 @@ type sysctlServiceClient struct {
 
 func NewSysctlServiceClient(cc grpc.ClientConnInterface) SysctlServiceClient {
 	return &sysctlServiceClient{cc}
-}
-
-func (c *sysctlServiceClient) GetMetric(ctx context.Context, in *GetMetricRequest, opts ...grpc.CallOption) (*GetMetricResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetMetricResponse)
-	err := c.cc.Invoke(ctx, SysctlService_GetMetric_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
 }
 
 func (c *sysctlServiceClient) GetMetrics(ctx context.Context, in *GetMetricsRequest, opts ...grpc.CallOption) (*GetMetricsResponse, error) {
@@ -84,6 +77,25 @@ func (c *sysctlServiceClient) GetMetricsByCategory(ctx context.Context, in *GetM
 	}
 	return out, nil
 }
+
+func (c *sysctlServiceClient) Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[SubscribeResponse], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &SysctlService_ServiceDesc.Streams[0], SysctlService_Subscribe_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[SubscribeRequest, SubscribeResponse]{ClientStream: stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type SysctlService_SubscribeClient = grpc.ServerStreamingClient[SubscribeResponse]
 
 func (c *sysctlServiceClient) ListKnownMetrics(ctx context.Context, in *ListKnownMetricsRequest, opts ...grpc.CallOption) (*ListKnownMetricsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
@@ -121,12 +133,15 @@ func (c *sysctlServiceClient) GetKernelRegistry(ctx context.Context, in *GetKern
 //
 // SysctlService provides access to macOS kernel metrics via sysctl.
 type SysctlServiceServer interface {
-	// GetMetric returns a single sysctl metric by name.
-	GetMetric(context.Context, *GetMetricRequest) (*GetMetricResponse, error)
 	// GetMetrics returns multiple sysctl metrics by name.
 	GetMetrics(context.Context, *GetMetricsRequest) (*GetMetricsResponse, error)
 	// GetMetricsByCategory returns all metrics in a category.
 	GetMetricsByCategory(context.Context, *GetMetricsByCategoryRequest) (*GetMetricsResponse, error)
+	// Subscribe streams metric deltas at a client-requested interval.
+	// Only metrics whose raw value changed since the last push are included.
+	// The server rejects intervals faster than min_interval_ns from the registry.
+	// Computed metrics are not supported — use GetMetrics for those.
+	Subscribe(*SubscribeRequest, grpc.ServerStreamingServer[SubscribeResponse]) error
 	// ListKnownMetrics returns all known/supported metric names.
 	ListKnownMetrics(context.Context, *ListKnownMetricsRequest) (*ListKnownMetricsResponse, error)
 	// ListCategories returns all metric categories.
@@ -143,14 +158,14 @@ type SysctlServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedSysctlServiceServer struct{}
 
-func (UnimplementedSysctlServiceServer) GetMetric(context.Context, *GetMetricRequest) (*GetMetricResponse, error) {
-	return nil, status.Error(codes.Unimplemented, "method GetMetric not implemented")
-}
 func (UnimplementedSysctlServiceServer) GetMetrics(context.Context, *GetMetricsRequest) (*GetMetricsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMetrics not implemented")
 }
 func (UnimplementedSysctlServiceServer) GetMetricsByCategory(context.Context, *GetMetricsByCategoryRequest) (*GetMetricsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetMetricsByCategory not implemented")
+}
+func (UnimplementedSysctlServiceServer) Subscribe(*SubscribeRequest, grpc.ServerStreamingServer[SubscribeResponse]) error {
+	return status.Error(codes.Unimplemented, "method Subscribe not implemented")
 }
 func (UnimplementedSysctlServiceServer) ListKnownMetrics(context.Context, *ListKnownMetricsRequest) (*ListKnownMetricsResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ListKnownMetrics not implemented")
@@ -180,24 +195,6 @@ func RegisterSysctlServiceServer(s grpc.ServiceRegistrar, srv SysctlServiceServe
 		t.testEmbeddedByValue()
 	}
 	s.RegisterService(&SysctlService_ServiceDesc, srv)
-}
-
-func _SysctlService_GetMetric_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetMetricRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(SysctlServiceServer).GetMetric(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: SysctlService_GetMetric_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(SysctlServiceServer).GetMetric(ctx, req.(*GetMetricRequest))
-	}
-	return interceptor(ctx, in, info, handler)
 }
 
 func _SysctlService_GetMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -235,6 +232,17 @@ func _SysctlService_GetMetricsByCategory_Handler(srv interface{}, ctx context.Co
 	}
 	return interceptor(ctx, in, info, handler)
 }
+
+func _SysctlService_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(SubscribeRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(SysctlServiceServer).Subscribe(m, &grpc.GenericServerStream[SubscribeRequest, SubscribeResponse]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type SysctlService_SubscribeServer = grpc.ServerStreamingServer[SubscribeResponse]
 
 func _SysctlService_ListKnownMetrics_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListKnownMetricsRequest)
@@ -298,10 +306,6 @@ var SysctlService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*SysctlServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetMetric",
-			Handler:    _SysctlService_GetMetric_Handler,
-		},
-		{
 			MethodName: "GetMetrics",
 			Handler:    _SysctlService_GetMetrics_Handler,
 		},
@@ -322,6 +326,12 @@ var SysctlService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SysctlService_GetKernelRegistry_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Subscribe",
+			Handler:       _SysctlService_Subscribe_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "proto/sysctlpb/sysctl.proto",
 }

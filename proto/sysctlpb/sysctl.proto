@@ -8,14 +8,17 @@ import "google/protobuf/duration.proto";
 
 // SysctlService provides access to macOS kernel metrics via sysctl.
 service SysctlService {
-  // GetMetric returns a single sysctl metric by name.
-  rpc GetMetric(GetMetricRequest) returns (GetMetricResponse);
-
   // GetMetrics returns multiple sysctl metrics by name.
   rpc GetMetrics(GetMetricsRequest) returns (GetMetricsResponse);
 
   // GetMetricsByCategory returns all metrics in a category.
   rpc GetMetricsByCategory(GetMetricsByCategoryRequest) returns (GetMetricsResponse);
+
+  // Subscribe streams metric deltas at a client-requested interval.
+  // Only metrics whose raw value changed since the last push are included.
+  // The server rejects intervals faster than min_interval_ns from the registry.
+  // Computed metrics are not supported — use GetMetrics for those.
+  rpc Subscribe(SubscribeRequest) returns (stream SubscribeResponse);
 
   // ListKnownMetrics returns all known/supported metric names.
   rpc ListKnownMetrics(ListKnownMetricsRequest) returns (ListKnownMetricsResponse);
@@ -30,18 +33,29 @@ service SysctlService {
 message GetKernelRegistryRequest {}
 message GetKernelRegistryResponse {
   KernelMetricRegistry registry = 1;
-}
-
-message GetMetricRequest {
-  string name = 1; // e.g. "hw.memsize", "kern.hostname"
-}
-
-message GetMetricResponse {
-  Metric metric = 1;
+  int64 min_interval_ns = 2; // fastest Subscribe interval the server supports
 }
 
 message GetMetricsRequest {
   repeated string names = 1;
+}
+
+message SubscribeRequest {
+  repeated string names = 1;     // metrics to stream (computed not supported)
+  int64 interval_ns = 2;         // desired push interval in nanoseconds
+}
+
+message SubscribeResponse {
+  int64 timestamp_ns = 1;            // server-side unix nanos when metrics were read
+  repeated MetricDelta deltas = 2;   // only changed metrics
+  repeated string errors = 3;        // per-stream errors (unknown names, computed, etc.)
+}
+
+// MetricDelta is a single changed metric value as raw sysctl bytes.
+// The client uses the KernelMetricRegistry to interpret the type.
+message MetricDelta {
+  string name = 1;
+  bytes value = 2;
 }
 
 message GetMetricsResponse {
@@ -106,13 +120,13 @@ enum AccessPattern {
   ACCESS_PATTERN_UNSPECIFIED = 0;  // Inherit default or fall back to DYNAMIC
   STATIC = 1;                     // Read once at startup, never refreshed
   POLLED = 2;                     // Background refresh at ttl interval, serve from cache
-  CACHED = 3;                     // Read live, cache for ttl, re-read after expiry
+  CONSTRAINED = 3;                // Mutable via OS/sandbox/process configuration
   DYNAMIC = 4;                    // Read live on every request
   DISABLED = 5;                   // Never read, return error if requested
 }
 
 // AccessConfig pairs an access pattern with a TTL.
-// TTL is used by POLLED (poll interval) and CACHED (cache expiry).
+// TTL is used by POLLED (poll interval) and CONSTRAINED (check interval).
 // Ignored for STATIC, DYNAMIC, and DISABLED.
 message AccessConfig {
   AccessPattern pattern = 1;

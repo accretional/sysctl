@@ -4,6 +4,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"time"
@@ -108,11 +109,6 @@ func (s *SysctlServer) buildFullRegistry() *pb.KernelMetricRegistry {
 	return reg
 }
 
-func (s *SysctlServer) GetMetric(_ context.Context, req *pb.GetMetricRequest) (*pb.GetMetricResponse, error) {
-	m := s.readMetric(req.Name)
-	return &pb.GetMetricResponse{Metric: m}, nil
-}
-
 func (s *SysctlServer) GetMetrics(_ context.Context, req *pb.GetMetricsRequest) (*pb.GetMetricsResponse, error) {
 	resp := &pb.GetMetricsResponse{
 		Metrics: make([]*pb.Metric, len(req.Names)),
@@ -167,7 +163,105 @@ func (s *SysctlServer) ListCategories(_ context.Context, _ *pb.ListCategoriesReq
 }
 
 func (s *SysctlServer) GetKernelRegistry(_ context.Context, _ *pb.GetKernelRegistryRequest) (*pb.GetKernelRegistryResponse, error) {
-	return &pb.GetKernelRegistryResponse{Registry: s.fullRegistry}, nil
+	return &pb.GetKernelRegistryResponse{
+		Registry:      s.fullRegistry,
+		MinIntervalNs: int64(s.minSubscribeInterval()),
+	}, nil
+}
+
+// minSubscribeInterval returns the fastest interval the server supports
+// for Subscribe, derived from the shortest recommended TTL.
+func (s *SysctlServer) minSubscribeInterval() time.Duration {
+	min := 100 * time.Millisecond // absolute floor
+	if s.fullRegistry == nil {
+		return min
+	}
+	for _, km := range s.fullRegistry.Metrics {
+		rec := km.RecommendedAccessPattern
+		if rec == nil || rec.Ttl == nil {
+			continue
+		}
+		ttl := time.Duration(rec.Ttl.Seconds)*time.Second + time.Duration(rec.Ttl.Nanos)
+		if ttl > 0 && ttl < min {
+			min = ttl
+		}
+	}
+	return min
+}
+
+// Subscribe streams metric deltas at the requested interval.
+// Only metrics whose raw bytes changed since the last push are included.
+// Returns INVALID_ARGUMENT if interval_ns is faster than min_interval_ns.
+func (s *SysctlServer) Subscribe(req *pb.SubscribeRequest, stream pb.SysctlService_SubscribeServer) error {
+	minInterval := s.minSubscribeInterval()
+	interval := time.Duration(req.IntervalNs)
+	if interval <= 0 {
+		interval = minInterval
+	}
+	if interval < minInterval {
+		return fmt.Errorf("interval %v is faster than server minimum %v; check GetKernelRegistry.min_interval_ns",
+			interval, minInterval)
+	}
+
+	// Validate names upfront — collect errors for the first response.
+	var errors []string
+	var validNames []string
+	for _, name := range req.Names {
+		info := metrics.ByName(name)
+		if info == nil {
+			errors = append(errors, fmt.Sprintf("%s: unknown metric", name))
+			continue
+		}
+		if info.Type == metrics.TypeComputed {
+			errors = append(errors, fmt.Sprintf("%s: computed metrics not supported in Subscribe; use GetMetrics", name))
+			continue
+		}
+		validNames = append(validNames, name)
+	}
+
+	ticker := time.NewTicker(interval)
+	defer ticker.Stop()
+
+	prev := make(map[string][]byte, len(validNames))
+	first := true
+
+	for {
+		now := time.Now().UnixNano()
+		var deltas []*pb.MetricDelta
+
+		for _, name := range validNames {
+			raw, err := s.cache.GetRaw(name)
+			if err != nil {
+				if first {
+					errors = append(errors, fmt.Sprintf("%s: %v", name, err))
+				}
+				continue
+			}
+			if !bytes.Equal(raw, prev[name]) {
+				deltas = append(deltas, &pb.MetricDelta{Name: name, Value: raw})
+				prev[name] = raw
+			}
+		}
+
+		resp := &pb.SubscribeResponse{
+			TimestampNs: now,
+			Deltas:      deltas,
+		}
+		if first {
+			resp.Errors = errors
+			first = false
+		}
+
+		if err := stream.Send(resp); err != nil {
+			return err
+		}
+
+		select {
+		case <-stream.Context().Done():
+			return stream.Context().Err()
+		case <-ticker.C:
+		}
+	}
 }
 
 // readMetric returns a metric value, checking the poller store for
