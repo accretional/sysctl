@@ -1,0 +1,2833 @@
+[
+  {
+    "name": "hw.ncpu",
+    "mib": [
+      6,
+      3
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "CTL_HW(6)+HW_(3)",
+    "validated": true
+  },
+  {
+    "name": "hw.activecpu",
+    "mib": [
+      6,
+      25
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.physicalcpu",
+    "mib": [
+      6,
+      104
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.physicalcpu_max",
+    "mib": [
+      6,
+      105
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.logicalcpu",
+    "mib": [
+      6,
+      106
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.logicalcpu_max",
+    "mib": [
+      6,
+      107
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.packages",
+    "mib": [
+      6,
+      130
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.nperflevels",
+    "mib": [
+      6,
+      136
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.cpu64bit_capable",
+    "mib": [
+      6,
+      110
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.cputype",
+    "mib": [
+      6,
+      108
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.cpusubtype",
+    "mib": [
+      6,
+      109
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.cpufamily",
+    "mib": [
+      6,
+      111
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.cpusubfamily",
+    "mib": [
+      6,
+      112
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.byteorder",
+    "mib": [
+      6,
+      4
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "CTL_HW(6)+HW_(4)",
+    "validated": true
+  },
+  {
+    "name": "hw.memsize",
+    "mib": [
+      6,
+      24
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "CTL_HW(6)+HW_(24)",
+    "validated": true
+  },
+  {
+    "name": "hw.memsize_usable",
+    "mib": [
+      6,
+      129
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.pagesize",
+    "mib": [
+      6,
+      115
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "MISMATCH: expected {6,7}, got [6 115]",
+    "validated": true
+  },
+  {
+    "name": "hw.pagesize32",
+    "mib": [
+      6,
+      116
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.cachelinesize",
+    "mib": [
+      6,
+      123
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.l1icachesize",
+    "mib": [
+      6,
+      124
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.l1dcachesize",
+    "mib": [
+      6,
+      125
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.l2cachesize",
+    "mib": [
+      6,
+      126
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.tbfrequency",
+    "mib": [
+      6,
+      128
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.cacheconfig",
+    "mib": [
+      6,
+      113
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.cachesize",
+    "mib": [
+      6,
+      114
+    ],
+    "mib_depth": 2,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel0.name",
+    "mib": [
+      6,
+      100,
+      110
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel0.physicalcpu",
+    "mib": [
+      6,
+      100,
+      100
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel0.physicalcpu_max",
+    "mib": [
+      6,
+      100,
+      101
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel0.logicalcpu",
+    "mib": [
+      6,
+      100,
+      102
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel0.logicalcpu_max",
+    "mib": [
+      6,
+      100,
+      103
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel0.l1icachesize",
+    "mib": [
+      6,
+      100,
+      104
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel0.l1dcachesize",
+    "mib": [
+      6,
+      100,
+      105
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel0.l2cachesize",
+    "mib": [
+      6,
+      100,
+      106
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel0.cpusperl2",
+    "mib": [
+      6,
+      100,
+      107
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel1.name",
+    "mib": [
+      6,
+      101,
+      110
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel1.physicalcpu",
+    "mib": [
+      6,
+      101,
+      100
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel1.physicalcpu_max",
+    "mib": [
+      6,
+      101,
+      101
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel1.logicalcpu",
+    "mib": [
+      6,
+      101,
+      102
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel1.logicalcpu_max",
+    "mib": [
+      6,
+      101,
+      103
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel1.l1icachesize",
+    "mib": [
+      6,
+      101,
+      104
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel1.l1dcachesize",
+    "mib": [
+      6,
+      101,
+      105
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel1.l2cachesize",
+    "mib": [
+      6,
+      101,
+      106
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.perflevel1.cpusperl2",
+    "mib": [
+      6,
+      101,
+      107
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_AES",
+    "mib": [
+      6,
+      102,
+      100,
+      111
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_SHA256",
+    "mib": [
+      6,
+      102,
+      100,
+      108
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_SHA512",
+    "mib": [
+      6,
+      102,
+      100,
+      109
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_SHA3",
+    "mib": [
+      6,
+      102,
+      100,
+      105
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_LSE",
+    "mib": [
+      6,
+      102,
+      100,
+      107
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_LSE2",
+    "mib": [
+      6,
+      102,
+      100,
+      137
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_CRC32",
+    "mib": [
+      6,
+      102,
+      100,
+      100
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_BF16",
+    "mib": [
+      6,
+      102,
+      100,
+      128
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_I8MM",
+    "mib": [
+      6,
+      102,
+      100,
+      130
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_DotProd",
+    "mib": [
+      6,
+      102,
+      100,
+      104
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_SME",
+    "mib": [
+      6,
+      102,
+      100,
+      146
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_SME2",
+    "mib": [
+      6,
+      102,
+      100,
+      147
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_PAuth",
+    "mib": [
+      6,
+      102,
+      100,
+      122
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_BTI",
+    "mib": [
+      6,
+      102,
+      100,
+      145
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.AdvSIMD",
+    "mib": [
+      6,
+      102,
+      100,
+      141
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.arm.FEAT_FP16",
+    "mib": [
+      6,
+      102,
+      100,
+      143
+    ],
+    "mib_depth": 4,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "hw.optional.floatingpoint",
+    "mib": [
+      6,
+      102,
+      101
+    ],
+    "mib_depth": 3,
+    "top_level": "hw",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.ostype",
+    "mib": [
+      1,
+      1
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(1)",
+    "validated": true
+  },
+  {
+    "name": "kern.osrelease",
+    "mib": [
+      1,
+      2
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(2)",
+    "validated": true
+  },
+  {
+    "name": "kern.osversion",
+    "mib": [
+      1,
+      65
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(65)",
+    "validated": true
+  },
+  {
+    "name": "kern.osproductversion",
+    "mib": [
+      1,
+      147
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.version",
+    "mib": [
+      1,
+      4
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(4)",
+    "validated": true
+  },
+  {
+    "name": "kern.hostname",
+    "mib": [
+      1,
+      10
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(10)",
+    "validated": true
+  },
+  {
+    "name": "kern.uuid",
+    "mib": [
+      1,
+      142
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.bootuuid",
+    "mib": [
+      1,
+      183
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.osrevision",
+    "mib": [
+      1,
+      3
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.osreleasetype",
+    "mib": [
+      1,
+      148
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.iossupportversion",
+    "mib": [
+      1,
+      149
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.num_files",
+    "mib": [
+      1,
+      157
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.num_vnodes",
+    "mib": [
+      1,
+      158
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.num_recycledvnodes",
+    "mib": [
+      1,
+      162
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.free_vnodes",
+    "mib": [
+      1,
+      163
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.memorystatus_level",
+    "mib": [
+      1,
+      249
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.memorystatus_purge_on_warning",
+    "mib": [
+      1,
+      252
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.memorystatus_purge_on_urgent",
+    "mib": [
+      1,
+      253
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.memorystatus_purge_on_critical",
+    "mib": [
+      1,
+      254
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.sched",
+    "mib": [
+      1,
+      203
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.sched_allow_NO_SMT_threads",
+    "mib": [
+      1,
+      166
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.cpu_checkin_interval",
+    "mib": [
+      1,
+      204
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.wq_max_threads",
+    "mib": [
+      1,
+      128
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.wq_max_constrained_threads",
+    "mib": [
+      1,
+      129
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.thread_groups_supported",
+    "mib": [
+      1,
+      234
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.boottime",
+    "mib": [
+      1,
+      21
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(21)",
+    "validated": true
+  },
+  {
+    "name": "kern.sleeptime",
+    "mib": [
+      1,
+      256
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.waketime",
+    "mib": [
+      1,
+      257
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.wake_abs_time",
+    "mib": [
+      1,
+      258
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.sleep_abs_time",
+    "mib": [
+      1,
+      259
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.useractive_abs_time",
+    "mib": [
+      1,
+      260
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.userinactive_abs_time",
+    "mib": [
+      1,
+      261
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.monotonicclock_usecs",
+    "mib": [
+      1,
+      295
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true,
+    "valid_err": "volatile"
+  },
+  {
+    "name": "kern.clockrate",
+    "mib": [
+      1,
+      12
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(12)",
+    "validated": true
+  },
+  {
+    "name": "kern.maxproc",
+    "mib": [
+      1,
+      6
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(6)",
+    "validated": true
+  },
+  {
+    "name": "kern.maxprocperuid",
+    "mib": [
+      1,
+      30
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(30)",
+    "validated": true
+  },
+  {
+    "name": "kern.maxfiles",
+    "mib": [
+      1,
+      7
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(7)",
+    "validated": true
+  },
+  {
+    "name": "kern.maxfilesperproc",
+    "mib": [
+      1,
+      29
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(29)",
+    "validated": true
+  },
+  {
+    "name": "kern.maxvnodes",
+    "mib": [
+      1,
+      5
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(5)",
+    "validated": true
+  },
+  {
+    "name": "kern.maxnbuf",
+    "mib": [
+      1,
+      289
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.argmax",
+    "mib": [
+      1,
+      8
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(8)",
+    "validated": true
+  },
+  {
+    "name": "kern.ngroups",
+    "mib": [
+      1,
+      18
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.aiomax",
+    "mib": [
+      1,
+      46
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(46)",
+    "validated": true
+  },
+  {
+    "name": "kern.aioprocmax",
+    "mib": [
+      1,
+      47
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(47)",
+    "validated": true
+  },
+  {
+    "name": "kern.coredump",
+    "mib": [
+      1,
+      51
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(51)",
+    "validated": true
+  },
+  {
+    "name": "kern.num_tasks",
+    "mib": [
+      1,
+      159
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.num_threads",
+    "mib": [
+      1,
+      160
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.num_taskthreads",
+    "mib": [
+      1,
+      161
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.ipc.maxsockbuf",
+    "mib": [
+      1,
+      32,
+      1
+    ],
+    "mib_depth": 3,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN+KERN_IPC+KIPC_(1)",
+    "validated": true
+  },
+  {
+    "name": "kern.ipc.somaxconn",
+    "mib": [
+      1,
+      32,
+      3
+    ],
+    "mib_depth": 3,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN+KERN_IPC+KIPC_(3)",
+    "validated": true
+  },
+  {
+    "name": "kern.ipc.nmbclusters",
+    "mib": [
+      1,
+      32,
+      9
+    ],
+    "mib_depth": 3,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.hv_support",
+    "mib": [
+      1,
+      228
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.hv_vmm_present",
+    "mib": [
+      1,
+      284
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.secure_kernel",
+    "mib": [
+      1,
+      285
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.safeboot",
+    "mib": [
+      1,
+      66
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "CTL_KERN(1)+KERN_(66)",
+    "validated": true
+  },
+  {
+    "name": "kern.hibernatemode",
+    "mib": [
+      1,
+      117
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.hibernatecount",
+    "mib": [
+      1,
+      123
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.slide",
+    "mib": [
+      1,
+      197
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.stack_size",
+    "mib": [
+      1,
+      199
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kern.stack_depth_max",
+    "mib": [
+      1,
+      200
+    ],
+    "mib_depth": 2,
+    "top_level": "kern",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.memory_pressure",
+    "mib": [
+      2,
+      249
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.page_free_wanted",
+    "mib": [
+      2,
+      250
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.vm_page_free_target",
+    "mib": [
+      2,
+      248
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pages",
+    "mib": [
+      2,
+      296
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pagesize",
+    "mib": [
+      2,
+      247
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.page_free_count",
+    "mib": [
+      2,
+      273
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.page_speculative_count",
+    "mib": [
+      2,
+      274
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.page_cleaned_count",
+    "mib": [
+      2,
+      275
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.page_pageable_internal_count",
+    "mib": [
+      2,
+      276
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.page_pageable_external_count",
+    "mib": [
+      2,
+      277
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.page_purgeable_count",
+    "mib": [
+      2,
+      251
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.page_purgeable_wired_count",
+    "mib": [
+      2,
+      252
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.page_reusable_count",
+    "mib": [
+      2,
+      257
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.page_realtime_count",
+    "mib": [
+      2,
+      290
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.vm_page_external_count",
+    "mib": [
+      2,
+      123
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.vm_page_background_count",
+    "mib": [
+      2,
+      208
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.vm_page_background_internal_count",
+    "mib": [
+      2,
+      209
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.vm_page_background_external_count",
+    "mib": [
+      2,
+      210
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.vm_page_background_target",
+    "mib": [
+      2,
+      207
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pages_grabbed",
+    "mib": [
+      2,
+      254
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_mode",
+    "mib": [
+      2,
+      129
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_is_active",
+    "mib": [
+      2,
+      130
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_available",
+    "mib": [
+      2,
+      132
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_input_bytes",
+    "mib": [
+      2,
+      126
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_compressed_bytes",
+    "mib": [
+      2,
+      127
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_bytes_used",
+    "mib": [
+      2,
+      128
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_pool_size",
+    "mib": [
+      2,
+      134
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_segment_pages_compressed",
+    "mib": [
+      2,
+      140
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_segment_limit",
+    "mib": [
+      2,
+      137
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_swapouts_under_30s",
+    "mib": [
+      2,
+      151
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_swapouts_under_60s",
+    "mib": [
+      2,
+      152
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_swapouts_under_300s",
+    "mib": [
+      2,
+      153
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_swapper_reclaim_swapins",
+    "mib": [
+      2,
+      154
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_swapper_defrag_swapins",
+    "mib": [
+      2,
+      155
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.compressor_swapper_swapout_thrashing_detected",
+    "mib": [
+      2,
+      159
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pageout_inactive_clean",
+    "mib": [
+      2,
+      278
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pageout_inactive_used",
+    "mib": [
+      2,
+      279
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pageout_inactive_dirty_internal",
+    "mib": [
+      2,
+      280
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pageout_inactive_dirty_external",
+    "mib": [
+      2,
+      281
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pageout_speculative_clean",
+    "mib": [
+      2,
+      282
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pageout_freed_external",
+    "mib": [
+      2,
+      283
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pageout_freed_speculative",
+    "mib": [
+      2,
+      284
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pageout_freed_cleaned",
+    "mib": [
+      2,
+      285
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.pageout_protect_realtime",
+    "mib": [
+      2,
+      291
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.vm_pageout_considered_bq_internal",
+    "mib": [
+      2,
+      212
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.vm_pageout_considered_bq_external",
+    "mib": [
+      2,
+      213
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.vm_pageout_rejected_bq_internal",
+    "mib": [
+      2,
+      214
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.vm_pageout_rejected_bq_external",
+    "mib": [
+      2,
+      215
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.swapusage",
+    "mib": [
+      2,
+      5
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "CTL_VM(2)+VM_(5)",
+    "validated": true
+  },
+  {
+    "name": "vm.swap_enabled",
+    "mib": [
+      2,
+      114
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.swapfileprefix",
+    "mib": [
+      2,
+      161
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.global_user_wire_limit",
+    "mib": [
+      2,
+      115
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.user_wire_limit",
+    "mib": [
+      2,
+      116
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.global_no_user_wire_amount",
+    "mib": [
+      2,
+      117
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.add_wire_count_over_global_limit",
+    "mib": [
+      2,
+      118
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.add_wire_count_over_user_limit",
+    "mib": [
+      2,
+      119
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.cs_blob_count",
+    "mib": [
+      2,
+      218
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.cs_blob_count_peak",
+    "mib": [
+      2,
+      220
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.cs_blob_size",
+    "mib": [
+      2,
+      219
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.cs_blob_size_peak",
+    "mib": [
+      2,
+      221
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.shared_region_count",
+    "mib": [
+      2,
+      326
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.shared_region_peak",
+    "mib": [
+      2,
+      327
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.copied_on_read",
+    "mib": [
+      2,
+      325
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vm.loadavg",
+    "mib": [
+      2,
+      2
+    ],
+    "mib_depth": 2,
+    "top_level": "vm",
+    "xnu_match": "CTL_VM(2)+VM_(2)",
+    "validated": true
+  },
+  {
+    "name": "machdep.cpu.brand_string",
+    "mib": [
+      7,
+      101,
+      104
+    ],
+    "mib_depth": 3,
+    "top_level": "machdep",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "machdep.cpu.core_count",
+    "mib": [
+      7,
+      101,
+      101
+    ],
+    "mib_depth": 3,
+    "top_level": "machdep",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "machdep.cpu.thread_count",
+    "mib": [
+      7,
+      101,
+      103
+    ],
+    "mib_depth": 3,
+    "top_level": "machdep",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "machdep.cpu.cores_per_package",
+    "mib": [
+      7,
+      101,
+      100
+    ],
+    "mib_depth": 3,
+    "top_level": "machdep",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "machdep.cpu.logical_per_package",
+    "mib": [
+      7,
+      101,
+      102
+    ],
+    "mib_depth": 3,
+    "top_level": "machdep",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "machdep.ptrauth_enabled",
+    "mib": [
+      7,
+      114
+    ],
+    "mib_depth": 2,
+    "top_level": "machdep",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "machdep.virtual_address_size",
+    "mib": [
+      7,
+      107
+    ],
+    "mib_depth": 2,
+    "top_level": "machdep",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "machdep.time_since_reset",
+    "mib": [
+      7,
+      104
+    ],
+    "mib_depth": 2,
+    "top_level": "machdep",
+    "xnu_match": "",
+    "validated": true,
+    "valid_err": "volatile"
+  },
+  {
+    "name": "machdep.wake_abstime",
+    "mib": [
+      7,
+      103
+    ],
+    "mib_depth": 2,
+    "top_level": "machdep",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "machdep.wake_conttime",
+    "mib": [
+      7,
+      105
+    ],
+    "mib_depth": 2,
+    "top_level": "machdep",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "machdep.user_idle_level",
+    "mib": [
+      7,
+      102
+    ],
+    "mib_depth": 2,
+    "top_level": "machdep",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.mssdflt",
+    "mib": [
+      4,
+      2,
+      6,
+      3
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.keepidle",
+    "mib": [
+      4,
+      2,
+      6,
+      6
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.keepintvl",
+    "mib": [
+      4,
+      2,
+      6,
+      7
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.keepcnt",
+    "mib": [
+      4,
+      2,
+      6,
+      141
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.sendspace",
+    "mib": [
+      4,
+      2,
+      6,
+      8
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.recvspace",
+    "mib": [
+      4,
+      2,
+      6,
+      9
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.pcbcount",
+    "mib": [
+      4,
+      2,
+      6,
+      202
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.sack",
+    "mib": [
+      4,
+      2,
+      6,
+      192
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.sack_globalholes",
+    "mib": [
+      4,
+      2,
+      6,
+      195
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.sack_globalmaxholes",
+    "mib": [
+      4,
+      2,
+      6,
+      194
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.ecn_initiate_out",
+    "mib": [
+      4,
+      2,
+      6,
+      181
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.ecn_negotiate_in",
+    "mib": [
+      4,
+      2,
+      6,
+      182
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.fastopen",
+    "mib": [
+      4,
+      2,
+      6,
+      198
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.delayed_ack",
+    "mib": [
+      4,
+      2,
+      6,
+      122
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.blackhole",
+    "mib": [
+      4,
+      2,
+      6,
+      124
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.cubic_sockets",
+    "mib": [
+      4,
+      2,
+      6,
+      118
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.v6mssdflt",
+    "mib": [
+      4,
+      2,
+      6,
+      13
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.tcp.always_keepalive",
+    "mib": [
+      4,
+      2,
+      6,
+      145
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.udp.pcbcount",
+    "mib": [
+      4,
+      2,
+      17,
+      103
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.udp.maxdgram",
+    "mib": [
+      4,
+      2,
+      17,
+      3
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.udp.recvspace",
+    "mib": [
+      4,
+      2,
+      17,
+      4
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.udp.checksum",
+    "mib": [
+      4,
+      2,
+      17,
+      1
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.ip.forwarding",
+    "mib": [
+      4,
+      2,
+      0,
+      1
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.ip.ttl",
+    "mib": [
+      4,
+      2,
+      0,
+      3
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.ip.maxfragpackets",
+    "mib": [
+      4,
+      2,
+      0,
+      119
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.local.pcbcount",
+    "mib": [
+      4,
+      1,
+      102
+    ],
+    "mib_depth": 3,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.soflow.count",
+    "mib": [
+      4,
+      115,
+      106
+    ],
+    "mib_depth": 3,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "net.inet.mptcp.pcbcount",
+    "mib": [
+      4,
+      2,
+      256,
+      111
+    ],
+    "mib_depth": 4,
+    "top_level": "net",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vfs.vnstats.num_vnodes",
+    "mib": [
+      3,
+      101,
+      114
+    ],
+    "mib_depth": 3,
+    "top_level": "vfs",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vfs.vnstats.num_free_vnodes",
+    "mib": [
+      3,
+      101,
+      105
+    ],
+    "mib_depth": 3,
+    "top_level": "vfs",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vfs.vnstats.num_recycledvnodes",
+    "mib": [
+      3,
+      101,
+      104
+    ],
+    "mib_depth": 3,
+    "top_level": "vfs",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vfs.vnstats.num_dead_vnodes",
+    "mib": [
+      3,
+      101,
+      109
+    ],
+    "mib_depth": 3,
+    "top_level": "vfs",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vfs.vnstats.num_newvnode_calls",
+    "mib": [
+      3,
+      101,
+      101
+    ],
+    "mib_depth": 3,
+    "top_level": "vfs",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vfs.nummntops",
+    "mib": [
+      3,
+      1
+    ],
+    "mib_depth": 2,
+    "top_level": "vfs",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "vfs.generic.apfs.allocated",
+    "mib": [
+      3,
+      0,
+      111,
+      127
+    ],
+    "mib_depth": 4,
+    "top_level": "vfs",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "debug.lowpri_throttle_enabled",
+    "mib": [
+      5,
+      121
+    ],
+    "mib_depth": 2,
+    "top_level": "debug",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "debug.bpf_bufsize",
+    "mib": [
+      5,
+      120
+    ],
+    "mib_depth": 2,
+    "top_level": "debug",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "debug.bpf_maxbufsize",
+    "mib": [
+      5,
+      119
+    ],
+    "mib_depth": 2,
+    "top_level": "debug",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kpc.pc_capture_supported",
+    "mib": [
+      102,
+      114
+    ],
+    "mib_depth": 2,
+    "top_level": "unknown(102)",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "kperf.debug_level",
+    "mib": [
+      101,
+      112
+    ],
+    "mib_depth": 2,
+    "top_level": "unknown(101)",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "iogpu.wired_limit_mb",
+    "mib": [
+      104,
+      102
+    ],
+    "mib_depth": 2,
+    "top_level": "unknown(104)",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "iogpu.wired_lwm_mb",
+    "mib": [
+      104,
+      100
+    ],
+    "mib_depth": 2,
+    "top_level": "unknown(104)",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "iogpu.dynamic_lwm",
+    "mib": [
+      104,
+      101
+    ],
+    "mib_depth": 2,
+    "top_level": "unknown(104)",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "security.mac.vnode_label_count",
+    "mib": [
+      103,
+      101,
+      104
+    ],
+    "mib_depth": 3,
+    "top_level": "unknown(103)",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "security.mac.asp.stats.exec_hook_count",
+    "mib": [
+      103,
+      101,
+      124,
+      104,
+      105
+    ],
+    "mib_depth": 5,
+    "top_level": "unknown(103)",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "security.mac.asp.stats.library_hook_count",
+    "mib": [
+      103,
+      101,
+      124,
+      104,
+      108
+    ],
+    "mib_depth": 5,
+    "top_level": "unknown(103)",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "security.mac.asp.stats.exec_hook_work_time",
+    "mib": [
+      103,
+      101,
+      124,
+      104,
+      103
+    ],
+    "mib_depth": 5,
+    "top_level": "unknown(103)",
+    "xnu_match": "",
+    "validated": true
+  },
+  {
+    "name": "security.mac.asp.stats.library_hook_time",
+    "mib": [
+      103,
+      101,
+      124,
+      104,
+      106
+    ],
+    "mib_depth": 5,
+    "top_level": "unknown(103)",
+    "xnu_match": "",
+    "validated": true
+  }
+]
+
+Resolved: 243/243
+MIB depths: depth=2: 161, depth=3: 35, depth=4: 43, depth=5: 4
+Top-level: debug=3, hw=60, kern=60, machdep=11, net=28, unknown(101)=1, unknown(102)=1, unknown(103)=5, unknown(104)=3, vfs=7, vm=64
+XNU header matches: 24 matched, 1 mismatched, 218 no constant
+Validation: 243 OK, 0 failed
+
+=== Flat ID Analysis ===
+  No MIB collisions — all names resolve to unique MIB arrays ✓
+  Flat uint64: 239 flattenable, 4 unflattenable, 0 collisions
+  Sequential enum: 0..242 — always collision-free, no MIB relationship
+
+=== MIB Value Ranges ===
+  kern (MIB[0]=1): MIB[1] range 1..295 (60 metrics)
+  vm (MIB[0]=2): MIB[1] range 2..327 (64 metrics)
+  net (MIB[0]=4): MIB[1] range 1..115 (28 metrics)
+  hw (MIB[0]=6): MIB[1] range 3..136 (60 metrics)
+  debug (MIB[0]=5): MIB[1] range 119..121 (3 metrics)
+  machdep (MIB[0]=7): MIB[1] range 101..114 (11 metrics)
+  unknown(MIB[0]=102): MIB[1] range 114..114 (1 metrics)
+  unknown(MIB[0]=101): MIB[1] range 112..112 (1 metrics)
+  unknown(MIB[0]=104): MIB[1] range 100..102 (3 metrics)
+  unknown(MIB[0]=103): MIB[1] range 101..101 (5 metrics)

@@ -2,5 +2,3 @@ bin/
 *.exe
 *.test
 *.out
-*.eval.csv
-cmd/darwin-name2int/mib_mappings.json
