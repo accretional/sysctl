@@ -108,23 +108,33 @@ func TestPoller_MetricCounts(t *testing.T) {
 	}
 
 	staticCount := 0
+	constrainedCount := 0
 	for _, km := range srv.fullRegistry.Metrics {
-		if km.RecommendedAccessPattern != nil && km.RecommendedAccessPattern.Pattern == pb.AccessPattern_STATIC {
+		if km.RecommendedAccessPattern == nil {
+			continue
+		}
+		switch km.RecommendedAccessPattern.Pattern {
+		case pb.AccessPattern_STATIC:
 			staticCount++
+		case pb.AccessPattern_CONSTRAINED:
+			constrainedCount++
 		}
 	}
 
-	polledCount := len(srv.poller.polledMetrics)
-	t.Logf("poller: %d static (pre-loaded), %d polled (scheduled)", staticCount, polledCount)
+	polledCount := len(srv.poller.polledMetrics) // includes both POLLED and CONSTRAINED
+	t.Logf("poller: %d static (pre-loaded), %d polled+constrained (scheduled, %d constrained)", staticCount, polledCount, constrainedCount)
 
 	if staticCount == 0 {
 		t.Error("expected some static metrics")
 	}
 	if polledCount == 0 {
-		t.Error("expected some polled metrics")
+		t.Error("expected some polled/constrained metrics")
+	}
+	if constrainedCount == 0 {
+		t.Error("expected some constrained metrics")
 	}
 	if staticCount+polledCount != len(srv.fullRegistry.Metrics) {
-		t.Logf("note: %d metrics are neither STATIC nor POLLED (DYNAMIC passthrough)",
+		t.Logf("note: %d metrics are neither STATIC nor POLLED/CONSTRAINED (DYNAMIC passthrough)",
 			len(srv.fullRegistry.Metrics)-staticCount-polledCount)
 	}
 }

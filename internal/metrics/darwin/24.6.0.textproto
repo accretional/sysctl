@@ -346,8 +346,8 @@ metrics {
 }
 metrics {
   name: "kern.hostname"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: STATIC }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.uuid"
@@ -405,18 +405,18 @@ metrics {
 }
 metrics {
   name: "kern.memorystatus_purge_on_warning"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.memorystatus_purge_on_urgent"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.memorystatus_purge_on_critical"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 
 # --- kern.sched ---
@@ -432,18 +432,18 @@ metrics {
 }
 metrics {
   name: "kern.cpu_checkin_interval"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.wq_max_threads"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.wq_max_constrained_threads"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.thread_groups_supported"
@@ -501,33 +501,33 @@ metrics {
 # --- kern.limits ---
 metrics {
   name: "kern.maxproc"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.maxprocperuid"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.maxfiles"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.maxfilesperproc"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.maxvnodes"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.maxnbuf"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.argmax"
@@ -541,18 +541,18 @@ metrics {
 }
 metrics {
   name: "kern.aiomax"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.aioprocmax"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.coredump"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.num_tasks"
@@ -573,13 +573,13 @@ metrics {
 # --- kern.ipc ---
 metrics {
   name: "kern.ipc.maxsockbuf"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.ipc.somaxconn"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.ipc.nmbclusters"
@@ -610,8 +610,8 @@ metrics {
 }
 metrics {
   name: "kern.hibernatemode"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "kern.hibernatecount"
@@ -742,7 +742,7 @@ metrics {
 metrics {
   name: "vm.compressor_mode"
   kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
 }
 metrics {
   name: "vm.compressor_is_active"
@@ -782,7 +782,7 @@ metrics {
 metrics {
   name: "vm.compressor_segment_limit"
   kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  recommended_access_pattern { pattern: POLLED ttl { seconds: 10 } }
 }
 metrics {
   name: "vm.compressor_swapouts_under_30s"
@@ -902,18 +902,18 @@ metrics {
 # --- vm.wire ---
 metrics {
   name: "vm.global_user_wire_limit"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "vm.user_wire_limit"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "vm.global_no_user_wire_amount"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "vm.add_wire_count_over_global_limit"
@@ -1021,40 +1021,40 @@ metrics {
 }
 metrics {
   name: "machdep.user_idle_level"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 30 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 
 # --- net.tcp ---
 metrics {
   name: "net.inet.tcp.mssdflt"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.keepidle"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.keepintvl"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.keepcnt"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.sendspace"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.recvspace"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.pcbcount"
@@ -1063,8 +1063,8 @@ metrics {
 }
 metrics {
   name: "net.inet.tcp.sack"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.sack_globalholes"
@@ -1073,33 +1073,33 @@ metrics {
 }
 metrics {
   name: "net.inet.tcp.sack_globalmaxholes"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.ecn_initiate_out"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.ecn_negotiate_in"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.fastopen"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.delayed_ack"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.blackhole"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.cubic_sockets"
@@ -1108,13 +1108,13 @@ metrics {
 }
 metrics {
   name: "net.inet.tcp.v6mssdflt"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.tcp.always_keepalive"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 
 # --- net.udp ---
@@ -1125,35 +1125,35 @@ metrics {
 }
 metrics {
   name: "net.inet.udp.maxdgram"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.udp.recvspace"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.udp.checksum"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 
 # --- net.ip ---
 metrics {
   name: "net.inet.ip.forwarding"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.ip.ttl"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "net.inet.ip.maxfragpackets"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 
 # --- net.misc ---
@@ -1213,18 +1213,18 @@ metrics {
 # --- debug ---
 metrics {
   name: "debug.lowpri_throttle_enabled"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "debug.bpf_bufsize"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "debug.bpf_maxbufsize"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 
 # --- kpc ---
@@ -1235,25 +1235,25 @@ metrics {
 }
 metrics {
   name: "kperf.debug_level"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 
 # --- iogpu ---
 metrics {
   name: "iogpu.wired_limit_mb"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "iogpu.wired_lwm_mb"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 metrics {
   name: "iogpu.dynamic_lwm"
-  kernel_access_pattern { pattern: DYNAMIC }
-  recommended_access_pattern { pattern: POLLED ttl { seconds: 60 } }
+  kernel_access_pattern { pattern: CONSTRAINED }
+  recommended_access_pattern { pattern: CONSTRAINED ttl { seconds: 60 } }
 }
 
 # --- security ---

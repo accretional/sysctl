@@ -66,7 +66,8 @@ The service implements per-host background polling:
 
 1. **STATIC metrics** are read once at startup and frozen in the poller store.
 2. **POLLED metrics** are refreshed by a single background goroutine on a configurable tick interval (`--poll-interval`, default 500ms). Each POLLED metric tracks its TTL from the registry and a `nextGatherNs` timestamp. On each tick, the poller iterates all POLLED metrics and re-reads those whose `nextGatherNs ≤ now`.
-3. **DYNAMIC metrics** (not STATIC or POLLED) fall through to a live MIB-cached read on every request.
+3. **CONSTRAINED metrics** are polled identically to POLLED metrics (same goroutine, same TTL-based scheduling). The distinction is semantic: CONSTRAINED describes values that change only by explicit admin/OS action (writable tunables like `kern.maxproc`, `net.inet.tcp.keepidle`), while POLLED describes continuously changing counters/gauges. CONSTRAINED metrics use 60s TTLs since they change rarely.
+4. **DYNAMIC metrics** (not STATIC, POLLED, or CONSTRAINED) fall through to a live MIB-cached read on every request.
 
 `GetMetric` / `GetMetrics` check the poller store first. If a metric is in the store (STATIC or POLLED), it's served from cache. Otherwise, `readMetricLive()` does a fresh kernel read.
 
@@ -110,13 +111,13 @@ The textproto is embedded via `//go:embed` and loaded at server startup. It cont
 - `GetKernelRegistry` also returns the full merged registry
 - Category filter still works on `ListKnownMetrics`
 - Kernel registry textproto for Darwin 24.6.0 with 250 metrics classified
-- Kernel patterns: 85 STATIC (hardware immutables), 165 DYNAMIC (everything that can change)
-- Recommended patterns: 80 STATIC (read once), 170 POLLED (10-60s TTLs)
+- Kernel patterns: 85 STATIC (hardware immutables), 51 CONSTRAINED (writable tunables), 114 DYNAMIC (counters/gauges)
+- Recommended patterns: 81 STATIC (read once), 118 POLLED (10-60s TTLs), 51 CONSTRAINED@60s (admin tunables)
 - `ValidateRegistry()` ensures 1:1 match between textproto and Known registry
 - **Per-host polling loop**: single goroutine with configurable tick interval
   - STATIC metrics read once at startup, frozen in poller store
-  - POLLED metrics refreshed per TTL via `nextGatherNs` tracking
-  - Non-polled metrics fall through to live MIB-cached reads
+  - POLLED and CONSTRAINED metrics refreshed per TTL via `nextGatherNs` tracking
+  - Non-cached metrics fall through to live MIB-cached reads
   - `--poll-interval` flag (default 500ms), pass 0 to disable polling
   - Mutex-locked `metricStore` for concurrent read/write safety
 

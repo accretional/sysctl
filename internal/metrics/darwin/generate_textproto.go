@@ -12,10 +12,92 @@ import (
 	"github.com/accretional/sysctl/internal/metrics"
 )
 
+// writableTunables are metrics confirmed writable via `sysctl -aW` on Darwin
+// ARM64 that represent admin-configurable tunables (not counters/gauges).
+// These change only by explicit admin or OS action, not continuously.
+var writableTunables = map[string]bool{
+	// Kernel limits
+	"kern.maxproc":          true,
+	"kern.maxprocperuid":    true,
+	"kern.maxfiles":         true,
+	"kern.maxfilesperproc":  true,
+	"kern.maxvnodes":        true,
+	"kern.maxnbuf":          true,
+	"kern.aiomax":           true,
+	"kern.aioprocmax":       true,
+	"kern.coredump":         true,
+
+	// IPC limits
+	"kern.ipc.maxsockbuf": true,
+	"kern.ipc.somaxconn":  true,
+
+	// Scheduling config
+	"kern.cpu_checkin_interval":    true,
+	"kern.wq_max_threads":         true,
+	"kern.wq_max_constrained_threads": true,
+
+	// Memory purge thresholds
+	"kern.memorystatus_purge_on_warning":  true,
+	"kern.memorystatus_purge_on_urgent":   true,
+	"kern.memorystatus_purge_on_critical": true,
+
+	// Misc writable tunables
+	"kern.hostname":      true,
+	"kern.hibernatemode": true,
+
+	// VM wire limits
+	"vm.global_user_wire_limit":    true,
+	"vm.user_wire_limit":           true,
+	"vm.global_no_user_wire_amount": true,
+
+	// Network TCP config
+	"net.inet.tcp.mssdflt":            true,
+	"net.inet.tcp.v6mssdflt":          true,
+	"net.inet.tcp.keepidle":           true,
+	"net.inet.tcp.keepintvl":          true,
+	"net.inet.tcp.keepcnt":            true,
+	"net.inet.tcp.sendspace":          true,
+	"net.inet.tcp.recvspace":          true,
+	"net.inet.tcp.sack":              true,
+	"net.inet.tcp.delayed_ack":        true,
+	"net.inet.tcp.fastopen":           true,
+	"net.inet.tcp.ecn_initiate_out":   true,
+	"net.inet.tcp.ecn_negotiate_in":   true,
+	"net.inet.tcp.blackhole":          true,
+	"net.inet.tcp.always_keepalive":   true,
+	"net.inet.tcp.sack_globalmaxholes": true,
+
+	// Network UDP config
+	"net.inet.udp.maxdgram":  true,
+	"net.inet.udp.recvspace": true,
+	"net.inet.udp.checksum":  true,
+
+	// Network IP config
+	"net.inet.ip.forwarding":     true,
+	"net.inet.ip.ttl":            true,
+	"net.inet.ip.maxfragpackets": true,
+
+	// Debug
+	"debug.lowpri_throttle_enabled": true,
+	"debug.bpf_bufsize":             true,
+	"debug.bpf_maxbufsize":          true,
+
+	// IOGPU
+	"iogpu.wired_limit_mb": true,
+	"iogpu.wired_lwm_mb":   true,
+	"iogpu.dynamic_lwm":    true,
+
+	// KPC
+	"kperf.debug_level": true,
+
+	// machdep
+	"machdep.user_idle_level": true,
+}
+
 // classifyKernel returns the kernel_access_pattern for a metric.
-// This encodes whether the Darwin kernel CAN change the value at runtime.
 // STATIC = immutable after boot (hardware properties, CPU features, compiled-in constants).
-// DYNAMIC = value can change at runtime (counters, tunables, state).
+// CONSTRAINED = mutable via admin/OS configuration (writable tunables).
+// DYNAMIC = value changes at runtime (counters, gauges, state).
 func classifyKernel(name string, cat metrics.Category) string {
 	// Hardware properties — truly immutable, set by silicon/firmware
 	switch cat {
@@ -26,9 +108,8 @@ func classifyKernel(name string, cat metrics.Category) string {
 
 	// Kernel identity — OS version strings, UUIDs (immutable for this boot)
 	if cat == metrics.CatKernIdentity {
-		// hostname is writable at runtime
-		if name == "kern.hostname" {
-			return "DYNAMIC"
+		if writableTunables[name] {
+			return "CONSTRAINED"
 		}
 		return "STATIC"
 	}
@@ -42,33 +123,9 @@ func classifyKernel(name string, cat metrics.Category) string {
 			"machdep.virtual_address_size":
 			return "STATIC"
 		default:
-			return "DYNAMIC"
-		}
-	}
-
-	// Kernel limits — these are writable tunables (sysctl -w)
-	if cat == metrics.CatKernLimits {
-		return "DYNAMIC"
-	}
-
-	// IPC limits — writable tunables
-	if cat == metrics.CatKernIPC {
-		return "DYNAMIC"
-	}
-
-	// Scheduling config — writable tunables
-	if cat == metrics.CatKernSched {
-		return "DYNAMIC"
-	}
-
-	// Kernel misc — mix of boot-time flags and writable tunables
-	if cat == metrics.CatKernMisc {
-		// These are genuinely immutable boot-time properties
-		switch name {
-		case "kern.hv_support", "kern.secure_kernel", "kern.safeboot",
-			"kern.slide", "kern.stack_size", "kern.stack_depth_max":
-			return "STATIC"
-		default:
+			if writableTunables[name] {
+				return "CONSTRAINED"
+			}
 			return "DYNAMIC"
 		}
 	}
@@ -81,66 +138,31 @@ func classifyKernel(name string, cat metrics.Category) string {
 		return "DYNAMIC"
 	}
 
-	// Memory status — all can change at runtime
-	if cat == metrics.CatKernMemory {
-		return "DYNAMIC"
+	// Kernel misc — boot-time flags are static
+	if cat == metrics.CatKernMisc {
+		switch name {
+		case "kern.hv_support", "kern.secure_kernel", "kern.safeboot",
+			"kern.slide", "kern.stack_size", "kern.stack_depth_max":
+			return "STATIC"
+		}
 	}
 
-	// Process/thread counters
-	if cat == metrics.CatKernProcess {
-		return "DYNAMIC"
+	// Check writable tunables map for all remaining metrics
+	if writableTunables[name] {
+		return "CONSTRAINED"
 	}
 
-	// All VM categories — dynamic kernel counters and tunables
-	switch cat {
-	case metrics.CatVMPressure, metrics.CatVMPages, metrics.CatVMPageout,
-		metrics.CatVMCompressor, metrics.CatVMSwap, metrics.CatVMWire,
-		metrics.CatVMMisc:
-		return "DYNAMIC"
-	}
-
-	// Network — TCP/UDP counters are dynamic, config tunables are also writable
-	switch cat {
-	case metrics.CatNetTCP, metrics.CatNetUDP, metrics.CatNetIP, metrics.CatNetMisc:
-		return "DYNAMIC"
-	}
-
-	// VFS — all dynamic
-	if cat == metrics.CatVFS {
-		return "DYNAMIC"
-	}
-
-	// Debug — writable tunables
-	if cat == metrics.CatDebug {
-		return "DYNAMIC"
-	}
-
-	// KPC/kperf — runtime config
-	if cat == metrics.CatKPC {
-		return "DYNAMIC"
-	}
-
-	// IOGPU — runtime-configurable limits
-	if cat == metrics.CatIOGPU {
-		return "DYNAMIC"
-	}
-
-	// Security counters — dynamic
-	if cat == metrics.CatSecurity {
-		return "DYNAMIC"
-	}
-
-	// Computed
-	if cat == metrics.CatComputed {
-		return "DYNAMIC"
-	}
-
+	// Anything not STATIC or CONSTRAINED is DYNAMIC
 	return "DYNAMIC"
 }
 
 // classifyRecommended returns the recommended_access_pattern and TTL.
 // This is independent of kernel_access_pattern — it encodes what monitoring
 // clients would reasonably want in terms of freshness.
+//
+// STATIC: never changes in practice.
+// POLLED: dynamic counters/gauges that change continuously.
+// CONSTRAINED: writable tunables that change only by admin action.
 func classifyRecommended(name string, cat metrics.Category) (string, string) {
 	// --- STATIC: values that don't change in practice ---
 
@@ -151,8 +173,12 @@ func classifyRecommended(name string, cat metrics.Category) (string, string) {
 		return "STATIC", ""
 	}
 
-	// Kernel identity — doesn't change within a boot
+	// Kernel identity — doesn't change within a boot (hostname is writable
+	// but rare enough to be CONSTRAINED, handled below via writableTunables)
 	if cat == metrics.CatKernIdentity {
+		if writableTunables[name] {
+			return "CONSTRAINED", `ttl { seconds: 60 }`
+		}
 		return "STATIC", ""
 	}
 
@@ -178,6 +204,12 @@ func classifyRecommended(name string, cat metrics.Category) (string, string) {
 		return "STATIC", ""
 	}
 
+	// --- CONSTRAINED: writable tunables (change by admin action only) ---
+	// Check early so tunables don't fall through to POLLED counters.
+	if writableTunables[name] {
+		return "CONSTRAINED", `ttl { seconds: 60 }`
+	}
+
 	// --- POLLED@10s: fast-changing counters ---
 
 	// Computed metrics aggregate dynamic sources
@@ -198,21 +230,12 @@ func classifyRecommended(name string, cat metrics.Category) (string, string) {
 
 	// Compressor counters — 10s
 	if cat == metrics.CatVMCompressor {
-		// Mode and segment limit change rarely but are tunables
-		if name == "vm.compressor_mode" || name == "vm.compressor_segment_limit" {
-			return "POLLED", `ttl { seconds: 60 }`
-		}
 		return "POLLED", `ttl { seconds: 10 }`
 	}
 
 	// Memory status level — 10s
 	if name == "kern.memorystatus_level" {
 		return "POLLED", `ttl { seconds: 10 }`
-	}
-
-	// Memory purge thresholds — tunables, rarely changed
-	if cat == metrics.CatKernMemory {
-		return "POLLED", `ttl { seconds: 60 }`
 	}
 
 	// Network connection counts — 10s
@@ -241,12 +264,12 @@ func classifyRecommended(name string, cat metrics.Category) (string, string) {
 		return "POLLED", `ttl { seconds: 30 }`
 	}
 
-	// Swap config — rarely changes
+	// Swap config — 60s (counters, not tunables)
 	if cat == metrics.CatVMSwap {
 		return "POLLED", `ttl { seconds: 60 }`
 	}
 
-	// Wire limits and violation counters — 60s
+	// Wire violation counters (limits are CONSTRAINED above) — 60s
 	if cat == metrics.CatVMWire {
 		return "POLLED", `ttl { seconds: 60 }`
 	}
@@ -256,40 +279,45 @@ func classifyRecommended(name string, cat metrics.Category) (string, string) {
 		return "POLLED", `ttl { seconds: 30 }`
 	}
 
-	// machdep timing/idle — 30s
+	// machdep timing/idle (non-tunable remainder) — 30s
 	if cat == metrics.CatMachdep {
 		return "POLLED", `ttl { seconds: 30 }`
 	}
 
-	// --- POLLED@60s: slow-changing config/tunables ---
+	// --- POLLED@60s: slow-changing non-tunable values ---
 
-	// Kernel limits — rarely changed tunables
+	// Kernel limits (non-tunable remainder, if any)
 	if cat == metrics.CatKernLimits {
 		return "POLLED", `ttl { seconds: 60 }`
 	}
 
-	// IPC limits — rarely changed
+	// IPC (non-tunable remainder)
 	if cat == metrics.CatKernIPC {
 		return "POLLED", `ttl { seconds: 60 }`
 	}
 
-	// Scheduling config — rarely changed
+	// Scheduling (non-tunable remainder)
 	if cat == metrics.CatKernSched {
 		return "POLLED", `ttl { seconds: 60 }`
 	}
 
-	// Kernel misc — boot flags and tunables
+	// Kernel misc — boot flags and non-tunable state
 	if cat == metrics.CatKernMisc {
 		return "POLLED", `ttl { seconds: 60 }`
 	}
 
-	// Network config tunables — rarely changed
+	// Memory (non-tunable remainder)
+	if cat == metrics.CatKernMemory {
+		return "POLLED", `ttl { seconds: 60 }`
+	}
+
+	// Network (non-tunable remainder — connection counts handled above)
 	if cat == metrics.CatNetTCP || cat == metrics.CatNetUDP ||
 		cat == metrics.CatNetIP || cat == metrics.CatNetMisc {
 		return "POLLED", `ttl { seconds: 60 }`
 	}
 
-	// Debug/KPC/IOGPU — config tunables
+	// Debug/KPC/IOGPU (non-tunable remainder)
 	if cat == metrics.CatDebug || cat == metrics.CatKPC || cat == metrics.CatIOGPU {
 		return "POLLED", `ttl { seconds: 60 }`
 	}

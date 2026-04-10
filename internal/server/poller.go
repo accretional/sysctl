@@ -61,9 +61,9 @@ type poller struct {
 }
 
 // newPoller creates a poller that ticks at frequencyIncrement.
-// It reads the full registry to determine which metrics are STATIC vs POLLED.
+// It reads the full registry to determine which metrics are STATIC, POLLED, or CONSTRAINED.
 // STATIC metrics are read immediately into the store.
-// POLLED metrics are scheduled for periodic gathering.
+// POLLED and CONSTRAINED metrics are scheduled for periodic gathering at their TTL.
 func newPoller(srv *SysctlServer, frequencyIncrement time.Duration) *poller {
 	p := &poller{
 		server:             srv,
@@ -80,6 +80,7 @@ func newPoller(srv *SysctlServer, frequencyIncrement time.Duration) *poller {
 	now := time.Now().UnixNano()
 	staticCount := 0
 	polledCount := 0
+	constrainedCount := 0
 
 	for _, km := range srv.fullRegistry.Metrics {
 		rec := km.RecommendedAccessPattern
@@ -94,7 +95,7 @@ func newPoller(srv *SysctlServer, frequencyIncrement time.Duration) *poller {
 			p.store.put(km.Name, m)
 			staticCount++
 
-		case pb.AccessPattern_POLLED:
+		case pb.AccessPattern_POLLED, pb.AccessPattern_CONSTRAINED:
 			ttlNanos := int64(10 * time.Second) // default 10s
 			if rec.Ttl != nil {
 				ttlNanos = rec.Ttl.Seconds*int64(time.Second) + int64(rec.Ttl.Nanos)
@@ -104,7 +105,11 @@ func newPoller(srv *SysctlServer, frequencyIncrement time.Duration) *poller {
 				ttlNanos:     ttlNanos,
 				nextGatherNs: now, // gather immediately on first tick
 			})
-			polledCount++
+			if rec.Pattern == pb.AccessPattern_CONSTRAINED {
+				constrainedCount++
+			} else {
+				polledCount++
+			}
 
 			// Also do an initial read so the store has values before the first tick.
 			m := srv.readMetricLive(km.Name)
@@ -112,7 +117,7 @@ func newPoller(srv *SysctlServer, frequencyIncrement time.Duration) *poller {
 		}
 	}
 
-	log.Printf("poller: %d static, %d polled (tick every %v)", staticCount, polledCount, frequencyIncrement)
+	log.Printf("poller: %d static, %d polled, %d constrained (tick every %v)", staticCount, polledCount, constrainedCount, frequencyIncrement)
 	return p
 }
 
