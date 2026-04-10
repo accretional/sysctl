@@ -51,7 +51,9 @@ The `macosasmsysctl` package calls `sysctl(3)` and `sysctlbyname(3)` directly vi
 
 ### Type notes (ARM64 macOS)
 
-Some sysctl values that are traditionally `int32` on x86 return 8 bytes on ARM64 (e.g., `hw.pagesize`, `hw.cachelinesize`, cache sizes). The metrics registry uses `int64` for these. `hw.cpufrequency` and `hw.busfrequency` don't exist on Apple Silicon — they were removed from the registry.
+Some sysctl values that are traditionally `int32` on x86 return 8 bytes on ARM64 (e.g., `hw.pagesize`, `hw.cachelinesize`, cache sizes). Apple re-registered these under new OIDs with wider types — e.g., `hw.pagesize` has legacy MIB `{6,7}` (4 bytes) but `sysctlbyname` resolves to `{6,115}` (8 bytes). Both return the same value; the legacy path is just narrower. Our MIB cache uses runtime name resolution so it automatically gets the wider types. See `SYSCTL_101.md` and `cmd/darwin-name2int/FINDINGS.md` for the full investigation.
+
+`hw.cpufrequency` and `hw.busfrequency` don't exist on Apple Silicon — they were removed from the registry.
 
 ## Workflow rules
 
@@ -63,3 +65,6 @@ Some sysctl values that are traditionally `int32` on x86 return 8 bytes on ARM64
   cd internal/metrics/darwin && go run generate_textproto.go
   ```
 - Access pattern design: see `CACHE_DESIGN.md`
+- Sysctl deep dive (MIBs, types, widening): see `SYSCTL_101.md`
+- Delta encoding roadmap: see `DELTA_DESIGN.md`
+- MIB mapping research: see `cmd/darwin-name2int/FINDINGS.md`
